@@ -138,7 +138,6 @@ public class ParagonAICreationWizard : EditorWindow
     void CreateANewAI()
     {
         AttachAIComponents(modelRootObject, spineBoneToRotate, targetObjParentTransform, animationController, bulletSpawnerTransform, animationAvatar, eyeTransform);
-        this.Close();
     }
 
     void AttachAIComponents(GameObject modelBase, Transform spineBoneTransform, Transform targetParentTrans, AnimatorController animController, Transform bulletSpawnTransform, Avatar ava, Transform eye)

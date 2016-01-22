@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{1483D16C-41C1-3D3B-D7DB-F588A59DAAF5}") = "WarGames", "Assembly-CSharp.csproj", "{59FD0231-F03E-F74F-7240-99282F7726DF}"
+EndProject
+Project("{1483D16C-41C1-3D3B-D7DB-F588A59DAAF5}") = "WarGames", "Assembly-CSharp-Editor.csproj", "{33760674-70B3-0A78-6AE4-32D1DC66FA5C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59FD0231-F03E-F74F-7240-99282F7726DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59FD0231-F03E-F74F-7240-99282F7726DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59FD0231-F03E-F74F-7240-99282F7726DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59FD0231-F03E-F74F-7240-99282F7726DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33760674-70B3-0A78-6AE4-32D1DC66FA5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33760674-70B3-0A78-6AE4-32D1DC66FA5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33760674-70B3-0A78-6AE4-32D1DC66FA5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33760674-70B3-0A78-6AE4-32D1DC66FA5C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+		GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+
+EndGlobal
