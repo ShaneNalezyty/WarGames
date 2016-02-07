@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 /*
  * This script provides a number of functions, which mostly includeproviding agents with lists of cover nodes and other agents
@@ -20,6 +21,10 @@ namespace ParagonAI {
         public float minDistForDynamicCoverSimilarity = 3;
         public LayerMask layerMask;
 
+        //Filename used for all agent logs
+        public string folderName;
+        public bool shouldLog = true;
+
         // Use this for initialization
         void Awake() {
             currentController = this;
@@ -36,6 +41,11 @@ namespace ParagonAI {
                 tempScripsList.Add( tempCoverNodeObjects[i].GetComponent<ParagonAI.CoverNodeScript>() );
             }
             coverNodeScripts = tempScripsList.ToArray();
+
+            //Generate a name for the log file indicating this run
+            //Placed here to share with all agents
+            folderName = "./WarGames-Logs/" + System.DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss");
+            
         }
 
         //Updateing and adding to lists
