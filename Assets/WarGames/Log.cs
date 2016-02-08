@@ -1,31 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-using System.Collections;
 
 namespace WarGames {
+    /// <summary>
+    /// Creates a log file for agents to write information to
+    /// </summary>
     public class Log {
-        String folder;
-        TextWriter textWriter;
-        public Log(string folderName, string agentName) {
-            folder = folderName;
+        private string fileName;
+        public Log( string folderName, string agentName ) {
             //Check if the log directory for this program instance has been created yet.
-            if (!Directory.Exists( folder )) {
-                Directory.CreateDirectory( folder );
+            if (!Directory.Exists( folderName )) {
+                Directory.CreateDirectory( folderName );
             }
             //Create the log file for this agent
-            textWriter = new StreamWriter( folderName + "/" + agentName + ".txt", true);
-            test();
+            fileName = folderName + "/" + agentName + ".txt";
+            write( "START" );
         }
-        public void test() {
-            // write a line of text to the file
-            textWriter.WriteLine(DateTime.Now);
 
-            // close the stream
-            textWriter.Close();
+        public void write( string info ) {
+            string data = DateTime.Now.ToString() + " -- " + info + Environment.NewLine;
+            File.AppendAllText( fileName, data );
         }
     }
 }

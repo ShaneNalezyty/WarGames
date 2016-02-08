@@ -9,8 +9,12 @@ using System.Collections.Generic;
 namespace ParagonAI {
     [RequireComponent( typeof( NavMeshAgent ) )]
     public class BaseScript : MonoBehaviour {
-        //Logging Class
+        //Log file writing Class
         public WarGames.Log logWriter;
+        //Holds the current plan in planning behaviours
+        public WarGames.Plan actionPlan;
+
+
         //Base Stuff
         //Scripts
         public ParagonAI.GunScript gunScript;
@@ -108,11 +112,11 @@ namespace ParagonAI {
         }
 
         public enum IdleBehaviour {
-            Search = 1, Patrol = 2, Wander = 3, MoveToTransform = 4, Custom = 5,
+            Search = 1, Patrol = 2, Wander = 3, MoveToTransform = 4, Custom = 5, Planning = 6,
         }
 
         public enum AIBehaviour {
-            GoToMoveTarget = 0, Cover = 1, Search = 2, Dodging = 3, Patrolling = 4, Wander = 5, UseDynamicObject = 6, InvestigateSound = 7, Custom = 8, MoveToTransform = 9, RunFromGrenade = 10,
+            GoToMoveTarget = 0, Cover = 1, Search = 2, Dodging = 3, Patrolling = 4, Wander = 5, UseDynamicObject = 6, InvestigateSound = 7, Custom = 8, MoveToTransform = 9, RunFromGrenade = 10, Planning = 11,
         }
 
         // Use this for initialization
@@ -157,7 +161,7 @@ namespace ParagonAI {
                 if (ParagonAI.ControllerScript.currentController.shouldLog) {
                     logWriter = new WarGames.Log( ParagonAI.ControllerScript.currentController.folderName, this.gameObject.name );
                 }
-                
+
             } else {
                 this.enabled = false;
             }
@@ -274,6 +278,8 @@ namespace ParagonAI {
                 return GetNewBehaviour( AIBehaviour.Patrolling );
             case IdleBehaviour.MoveToTransform:
                 return GetNewBehaviour( AIBehaviour.MoveToTransform );
+            case IdleBehaviour.Planning:
+                return GetNewBehaviour( AIBehaviour.Planning );
             }
             return null;
         }
@@ -327,6 +333,9 @@ namespace ParagonAI {
                 break;
             case AIBehaviour.RunFromGrenade:
                 bToReturn = (ParagonAI.CustomAIBehaviour)gameObject.AddComponent( typeof( ParagonAI.RunAwayFromGrenade ) );
+                break;
+            case AIBehaviour.Planning:
+                bToReturn = (ParagonAI.CustomAIBehaviour)gameObject.AddComponent( typeof( WarGames.Behaviour.Planning ) );
                 break;
             }
             bToReturn.Initiate();
@@ -432,7 +441,7 @@ namespace ParagonAI {
             }
         }
 
-
+        //Dodging///////////////////////////////////////////////////////////
         public void CheckToSeeIfWeShouldDodge() {
             //Make sure we're out of cover, not dodging already, and environment allows for a dodge (ie: make sure we won't dodge into a wall.)
             if (myTransform && targetTransform && !inCover && !isDodging && !Physics.Linecast( myTransform.position, targetTransform.position, layerMask ) && Vector3.Distance( myTransform.position, targetTransform.position ) > minDistToDodge) {
@@ -440,7 +449,7 @@ namespace ParagonAI {
                     SetOverrideBehaviour( GetNewBehaviour( AIBehaviour.Dodging ), true );
             }
         }
-        //Dodging///////////////////////////////////////////////////////////
+
         //Melee///////////////////////////////////////////////////////////
         IEnumerator AttackInMelee() {
             isMeleeing = true;
@@ -538,13 +547,13 @@ namespace ParagonAI {
 
         //Kill AI///////////////////////////////////////////////////////////	
         public void KillAI() {
-            //Check if we can actually do this, to stop errors in wierd edge cases
+            //Check if we can actually do this, to stop errors in weird edge cases
             if (this.enabled) {
                 if (combatBehaviour)
                     combatBehaviour.KillBehaviour();
                 if (idleBehaviour)
                     idleBehaviour.KillBehaviour();
-
+                
                 //Call method on other scripts on this object, in case extra stuff needs to be done when the AI dies.
                 gameObject.SendMessage( "OnAIDeath", SendMessageOptions.DontRequireReceiver );
                 GameObject.Destroy( gameObject );
