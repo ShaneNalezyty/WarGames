@@ -9,12 +9,13 @@ namespace WarGames.Action {
 
         private ParagonAI.BaseScript baseScript;
         private ActionType type;
+        private Transform target;
 
         public enum ActionType {
             ProceedTo = 0, FindCover = 1, Defend = 2, Attack = 3,
         }
 
-        public ActionTemplate(ParagonAI.BaseScript script, ActionType actionType) {
+        public ActionTemplate(ParagonAI.BaseScript script, ActionType actionType, Transform target) {
             baseScript = script;
             type = actionType;
         }
