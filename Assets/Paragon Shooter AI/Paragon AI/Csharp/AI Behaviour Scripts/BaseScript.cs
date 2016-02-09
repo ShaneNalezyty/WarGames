@@ -125,7 +125,9 @@ namespace ParagonAI {
             //Mainly taking inputs from the user and putting them into the formats we use later, 
             //eg: squared values for faster distance comparison.	
             myTransform = transform;
-
+            List<WarGames.Action.ActionTemplate> actions = new List<WarGames.Action.ActionTemplate>();
+            actions.Add(new WarGames.Action.ActionTemplate(this,WarGames.Action.ActionTemplate.ActionType.Attack));
+            actionPlan = new WarGames.Plan(actions);
 
             timeUntilNextDodge = timeBetweenLoSDodges * Random.value;
             dodgeClearHeightCheckPos = Vector3.zero;
@@ -154,6 +156,7 @@ namespace ParagonAI {
 
         //Start the cycle after everything else is initialized	
         void Start() {
+            
             GetDefaultBehaviours();
             if (ParagonAI.ControllerScript.currentController != null) {
                 layerMask = ParagonAI.ControllerScript.currentController.GetLayerMask();
@@ -383,15 +386,15 @@ namespace ParagonAI {
 
         //Stop looking at the target.
         public void EndEngage() {
-            //engaging = false;
+            engaging = false;
             if (canOverrideBehaviour)
                 SetBehaviour();
 
-            //if(animationScript)
-            //	animationScript.SetDisengage();	
+            if(animationScript)
+            	animationScript.SetDisengage();	
 
-            //if(agent)
-            //	agent.speed = alertSpeed;
+            if(agent)
+            	agent.speed = alertSpeed;
 
             if (gunScript)
                 gunScript.EndEngage();

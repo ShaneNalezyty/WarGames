@@ -8,8 +8,8 @@ using UnityEngine;
 
 namespace WarGames {
     public class Plan {
-        private List<Action.Action> actionList;
-        public Plan(List<WarGames.Action.Action> listOfActions) {
+        private List<Action.ActionTemplate> actionList;
+        public Plan(List<WarGames.Action.ActionTemplate> listOfActions) {
             actionList = listOfActions;
         }
 
@@ -20,6 +20,7 @@ namespace WarGames {
         
         public bool hasAction() {
             return !(actionList.Count == 0);
+            
         }
         internal void onEndPlan() {
             if (!hasAction()) {

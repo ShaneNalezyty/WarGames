@@ -89,7 +89,7 @@ public class healthScriptInspector : Editor
 
     public void DrawArray(SerializedProperty prop)
     {
-        EditorGUIUtility.LookLikeControls();
+        //EditorGUIUtility.LookLikeControls();
         EditorGUILayout.PropertyField(prop, true);
     }
 }

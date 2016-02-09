@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 /*
@@ -31,7 +32,7 @@ namespace ParagonAI
         {
             if (Input.GetKey(KeyCode.R))
             {
-                Application.LoadLevel(0);
+                SceneManager.LoadScene(0);
             }
 
 

@@ -246,7 +246,7 @@ public class BaseScriptInspector : Editor
 
     public void DrawArray(SerializedProperty prop)
     {
-        EditorGUIUtility.LookLikeControls();
+        //EditorGUIUtility.LookLikeControls();
         EditorGUI.BeginChangeCheck();
         EditorGUILayout.PropertyField(prop, true);
         if(EditorGUI.EndChangeCheck())

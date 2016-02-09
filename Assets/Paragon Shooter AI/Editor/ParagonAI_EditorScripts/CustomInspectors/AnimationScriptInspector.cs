@@ -88,7 +88,7 @@ public class animationScriptInspector : Editor
 
     public void DrawArray(SerializedProperty prop)
     {
-        EditorGUIUtility.LookLikeControls();
+        //EditorGUIUtility.LookLikeControls();
         EditorGUILayout.PropertyField(prop, true);
     }
 }

@@ -148,7 +148,7 @@ public class TargetScriptInspector : Editor
 
     public void DrawArray(SerializedProperty prop)
     {
-        EditorGUIUtility.LookLikeControls();
+        //EditorGUIUtility.LookLikeControls();
         EditorGUILayout.PropertyField(prop, true);
     }
 }
