@@ -6,10 +6,10 @@ using WarGames.Action;
 namespace WarGames.Behaviour {
     public class Planning : ParagonAI.CustomAIBehaviour {
 
-        private Plan createPlanFromGoal() {
+        public Plan createPlanFromGoal() {
             List<ActionTemplate> actions = new List<ActionTemplate>();
-            actions.Add( new ActionTemplate( baseScript, ActionTemplate.ActionType.ProceedTo, GameObject.Find( "TargetOne" ).transform ));
-            actions.Add( new ActionTemplate( baseScript, ActionTemplate.ActionType.ProceedTo, GameObject.Find( "TargetTwo" ).transform ));
+            actions.Add( new ActionTemplate( baseScript, GameObject.Find( "TargetOne" ).transform ));
+            actions.Add( new ActionTemplate( baseScript, GameObject.Find( "TargetTwo" ).transform ));
             return new WarGames.Plan(actions);
              
         }

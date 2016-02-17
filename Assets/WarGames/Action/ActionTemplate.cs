@@ -8,16 +8,11 @@ namespace WarGames.Action {
     public class ActionTemplate {
 
         private ParagonAI.BaseScript baseScript;
-        private ActionType type;
         private Transform target;
 
-        public enum ActionType {
-            ProceedTo = 0, FindCover = 1, Defend = 2, Attack = 3,
-        }
-
-        public ActionTemplate(ParagonAI.BaseScript script, ActionType actionType, Transform target) {
+        public ActionTemplate(ParagonAI.BaseScript script, Transform targetTransform) {
             baseScript = script;
-            type = actionType;
+            target = targetTransform;
         }
 
         public bool AICycle() {
@@ -26,10 +21,6 @@ namespace WarGames.Action {
 
         public void OnEndAction() {
 
-        }
-
-        public ActionType getType() {
-            return type;
         }
     }
 }

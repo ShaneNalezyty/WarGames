@@ -126,7 +126,7 @@ namespace ParagonAI {
             //eg: squared values for faster distance comparison.	
             myTransform = transform;
             List<WarGames.Action.ActionTemplate> actions = new List<WarGames.Action.ActionTemplate>();
-            actions.Add(new WarGames.Action.ActionTemplate(this,WarGames.Action.ActionTemplate.ActionType.Attack));
+            actions.Add(new WarGames.Action.ActionTemplate(this, GameObject.Find( "TargetOne" ).transform ));
             actionPlan = new WarGames.Plan(actions);
 
             timeUntilNextDodge = timeBetweenLoSDodges * Random.value;
