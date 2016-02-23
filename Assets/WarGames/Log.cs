@@ -7,6 +7,7 @@ namespace WarGames {
     /// </summary>
     public class Log {
         private string fileName;
+
         public Log( string folderName, string agentName ) {
             //Check if the log directory for this program instance has been created yet.
             if (!Directory.Exists( folderName )) {
@@ -16,7 +17,10 @@ namespace WarGames {
             fileName = folderName + "/" + agentName + ".txt";
             write( "START" );
         }
-
+        /// <summary>
+        /// Writes info message to agents file with current timestamp
+        /// </summary>
+        /// <param name="info">Message to write</param>
         public void write( string info ) {
             string data = DateTime.Now.ToString() + " -- " + info + Environment.NewLine;
             File.AppendAllText( fileName, data );

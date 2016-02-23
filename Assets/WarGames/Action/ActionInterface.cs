@@ -10,27 +10,22 @@ namespace WarGames.Action {
     /// <summary>
     /// Interface all actions must implement 
     /// </summary>
-    public class ActionTemplate {
+        public interface ActionInterface {
+        ParagonAI.BaseScript baseScript {
+            get;
+        }
 
-        private ParagonAI.BaseScript baseScript;
-        private Transform target;
-
-        public ActionTemplate(ParagonAI.BaseScript script, Transform targetTransform) {
-            baseScript = script;
-            target = targetTransform;
+        List<Transform> targets {
+            get;
         }
         /// <summary>
         /// All Actions need a AI cycle with run time logic in it.
         /// </summary>
         /// <returns>true if this cycle completed the action.</returns>
-        public bool AICycle() {
-            return true;
-        }
+        bool AICycle();
         /// <summary>
         /// Ran on the distruction of a action.
         /// </summary>
-        public void OnEndAction() {
-
-        }
+        void OnEndAction();
     }
 }
