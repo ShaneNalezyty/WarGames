@@ -12,7 +12,7 @@ namespace ParagonAI {
         //Log file writing Class
         public WarGames.Log logWriter;
         //Holds the current plan in planning behaviours
-        public WarGames.Plan actionPlan;
+        public WarGames.Planning.Plan actionPlan;
 
 
         //Base Stuff
@@ -125,9 +125,9 @@ namespace ParagonAI {
             //Mainly taking inputs from the user and putting them into the formats we use later, 
             //eg: squared values for faster distance comparison.	
             myTransform = transform;
-            List<WarGames.Action.ActionTemplate> actions = new List<WarGames.Action.ActionTemplate>();
-            actions.Add(new WarGames.Action.ActionTemplate(this, GameObject.Find( "TargetOne" ).transform ));
-            actionPlan = new WarGames.Plan(actions);
+            List<WarGames.Action.ActionInterface> actions = new List<WarGames.Action.ActionInterface>();
+            //actions.Add(new WarGames.Action.ActionTemplate(this, GameObject.Find( "TargetOne" ).transform ));
+            actionPlan = new WarGames.Planning.Plan(actions);
 
             timeUntilNextDodge = timeBetweenLoSDodges * Random.value;
             dodgeClearHeightCheckPos = Vector3.zero;
@@ -338,7 +338,7 @@ namespace ParagonAI {
                 bToReturn = (ParagonAI.CustomAIBehaviour)gameObject.AddComponent( typeof( ParagonAI.RunAwayFromGrenade ) );
                 break;
             case AIBehaviour.Planning:
-                bToReturn = (ParagonAI.CustomAIBehaviour)gameObject.AddComponent( typeof( WarGames.Behaviour.Planning ) );
+                bToReturn = (ParagonAI.CustomAIBehaviour)gameObject.AddComponent( typeof( WarGames.Planning.IdlePlanningBehaviour ) );
                 break;
             }
             bToReturn.Initiate();
