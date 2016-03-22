@@ -6,10 +6,8 @@ using System.Collections;
  * This script will find agents of a given team, and attempt to make them use the dynamic object
  * */
 
-namespace ParagonAI
-{
-    public class DynamicObjectScript : MonoBehaviour
-    {
+namespace ParagonAI {
+    public class DynamicObjectScript : MonoBehaviour {
 
         public int[] teamsToAlert;
         public float lookForTeamsRadius = 20;
@@ -30,34 +28,25 @@ namespace ParagonAI
 
         public float timeToWait = 1.0f;
 
-        void Start()
-        {
-            if (dynamicObjectTransform)
-            {
+        void Start() {
+            if (dynamicObjectTransform) {
                 StartCoroutine(Cycle());
-            }
-            else
-            {
+            } else {
                 Debug.LogWarning("No Dynamic Object Transform found!  Please assign it in the inspector!");
             }
         }
 
-        IEnumerator Cycle()
-        {
+        IEnumerator Cycle() {
             yield return new WaitForSeconds(timeBetweenChecks);
 
-            while (this.enabled)
-            {
+            while (this.enabled) {
                 //Don't look every cycle.  This helps add some randombess
-                if (currentlyEnabled && Random.value < oddsToLookEachCycle)
-                {
+                if (currentlyEnabled && Random.value < oddsToLookEachCycle) {
                     //Find the agents on a given team.  All we need from them is their target scripts
                     ParagonAI.Target[] currentListOfTargets = ParagonAI.ControllerScript.currentController.GetCurrentAIsWithinRadius(teamsToAlert, lookForTeamsRadius, dynamicObjectTransform.position);
-                    for (int i = 0; i < currentListOfTargets.Length; i++)
-                    {
+                    for (int i = 0; i < currentListOfTargets.Length; i++) {
                         //Query the agent to see whether ot not it will use the object.
-                        if (currentListOfTargets[i].targetScript.UseDynamicObject(dynamicObjectTransform, dynamicObjectAnimationClipKey, dynamicObjectMethod, requireEngaging, timeToWait))
-                        {
+                        if (currentListOfTargets[i].targetScript.UseDynamicObject(dynamicObjectTransform, dynamicObjectAnimationClipKey, dynamicObjectMethod, requireEngaging, timeToWait)) {
                             //If a suitable agent is found, don't look any more.
                             DisableDynamicObject();
                             break;
@@ -70,20 +59,16 @@ namespace ParagonAI
             }
         }
 
-        void EnableDynamicObject()
-        {
+        void EnableDynamicObject() {
             currentlyEnabled = true;
         }
 
-        void DisableDynamicObject()
-        {
+        void DisableDynamicObject() {
             currentlyEnabled = false;
         }
 
-        void OnDrawGizmos()
-        {
-            if (showRadius && dynamicObjectTransform)
-            {
+        void OnDrawGizmos() {
+            if (showRadius && dynamicObjectTransform) {
                 Gizmos.color = Color.grey;
                 Gizmos.DrawWireSphere(dynamicObjectTransform.position, lookForTeamsRadius);
             }

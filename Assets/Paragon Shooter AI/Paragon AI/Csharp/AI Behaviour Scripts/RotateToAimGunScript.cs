@@ -5,10 +5,8 @@ using System.Collections;
  * Rotates the spine of the agent such that the gun points in the direction of the target.
  * */
 
-namespace ParagonAI
-{
-    public class RotateToAimGunScript : MonoBehaviour
-    {
+namespace ParagonAI {
+    public class RotateToAimGunScript : MonoBehaviour {
         public Transform spineBone;
         public Transform bulletSpawnTransform;
         [HideInInspector]
@@ -30,20 +28,16 @@ namespace ParagonAI
         Quaternion targetRot;
 
 
-        void Awake()
-        {
+        void Awake() {
             if (spineBone)
                 spineRotationLastFrame = spineBone.rotation;
-            else
-            {
+            else {
                 this.enabled = false;
             }
         }
 
-        void LateUpdate()
-        {
-            if (isEnabled && targetTransform && minDistToAim < Vector3.Distance(spineBone.position, targetTransform.position))
-            {
+        void LateUpdate() {
+            if (isEnabled && targetTransform && minDistToAim < Vector3.Distance(spineBone.position, targetTransform.position)) {
                 //Rotate the spine bone so the gun (roughly) aims at the target
                 spineBone.rotation = Quaternion.FromToRotation(bulletSpawnTransform.forward, targetTransform.position - bulletSpawnTransform.position) * spineBone.rotation;
 
@@ -61,14 +55,11 @@ namespace ParagonAI
                 spineBone.rotation = Quaternion.Slerp(spineRotationLastFrame, targetRot, Time.deltaTime * rotationSpeed);
                 spineRotationLastFrame = spineBone.rotation;
 
-                if (shouldDebug)
-                {
+                if (shouldDebug) {
                     Debug.DrawRay(bulletSpawnTransform.position, bulletSpawnTransform.forward * 1000, Color.red);
                     Debug.DrawLine(bulletSpawnTransform.position, targetTransform.position, Color.blue);
                 }
-            }
-            else
-            {
+            } else {
                 //Smoothly return to the default position if we're not engaged to a target.  More or less mirrors the agent's animations.
                 targetRot = spineBone.rotation;
                 spineBone.rotation = Quaternion.Slerp(spineRotationLastFrame, targetRot, Time.deltaTime * rotationSpeed);
@@ -76,29 +67,24 @@ namespace ParagonAI
             }
         }
 
-        public void Activate()
-        {
-        	if(shouldDebug)
-        		{
-        			Debug.Log(UnityEngine.StackTraceUtility.ExtractStackTrace ());
-        		}
+        public void Activate() {
+            if (shouldDebug) {
+                Debug.Log(UnityEngine.StackTraceUtility.ExtractStackTrace());
+            }
             spineRotationLastFrame = spineBone.rotation;
             isEnabled = true;
         }
 
-        public void Deactivate()
-        {
+        public void Deactivate() {
             isEnabled = false;
         }
 
-        public void SetTargetTransform(Transform x)
-        {
+        public void SetTargetTransform(Transform x) {
             targetTransform = x;
         }
 
         //Can't really decide which of the following two methods to use.
-        float ClampEulerAngles(float r, float lim)
-        {
+        float ClampEulerAngles(float r, float lim) {
             if (r > 180)
                 r -= 360;
 
@@ -108,16 +94,13 @@ namespace ParagonAI
         }
 
 
-        float ResetIfTooHigh(float r, float lim)
-        {
+        float ResetIfTooHigh(float r, float lim) {
             if (r > 180)
                 r -= 360;
 
-            if (r < -lim || r > lim)
-            {
+            if (r < -lim || r > lim) {
                 return 0;
-            }
-            else
+            } else
                 return r;
         }
     }

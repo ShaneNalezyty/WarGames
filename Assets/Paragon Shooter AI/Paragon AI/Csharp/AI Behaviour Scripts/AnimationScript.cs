@@ -5,10 +5,8 @@ using System.Collections;
  * This script manages the animations and rotation of the agent.
  * */
 
-namespace ParagonAI
-{
-    public class AnimationScript : MonoBehaviour
-    {
+namespace ParagonAI {
+    public class AnimationScript : MonoBehaviour {
         //Stuff
         public ParagonAI.BaseScript myBaseScript;
         public Transform myAIBodyTransform;
@@ -61,29 +59,24 @@ namespace ParagonAI
         public float turnSpeed = 4.0f;
 
         public float meleeAnimationLength = 3;
-        
+
         private bool sprinting = false;
 
 
         // Use this for initialization
-        void Awake()
-        {
+        void Awake() {
             SetHashes();
         }
 
-        void Start()
-        {
+        void Start() {
             //Set offset of mesh	
-            if (myAIBodyTransform)
-            {
+            if (myAIBodyTransform) {
                 bodyOffset = myAIBodyTransform.localPosition;
                 bodyOffset.x *= transform.localScale.x;
                 bodyOffset.y *= transform.localScale.y;
                 bodyOffset.z *= transform.localScale.z;
                 myAIBodyTransform.parent = null;
-            }
-            else
-            {
+            } else {
                 Debug.LogWarning("No transform set for 'myAIBodyTransform'.  Please assign a transform in the inspector!");
                 this.enabled = false;
             }
@@ -95,30 +88,23 @@ namespace ParagonAI
 
 
             //Check to make sure we have all of our scripts assigned	
-            if (!myBaseScript)
-            {
+            if (!myBaseScript) {
                 Debug.LogWarning("No Base Script found!  Please add one in the inspector!");
                 this.enabled = false;
-            }
-            else if (maxMovementSpeed < 0)
-            {
+            } else if (maxMovementSpeed < 0) {
                 maxMovementSpeed = myBaseScript.runSpeed;
             }
 
-            if (!animator)
-            {
+            if (!animator) {
                 Debug.LogWarning("No animator component found!  Please add one in the inspector!");
                 this.enabled = false;
-            }
-            else
-            {
+            } else {
                 animator.speed = animatorSpeed;
             }
         }
 
         // Update is called once per frame
-        void LateUpdate()
-        {
+        void LateUpdate() {
             //Set body to it's current position
             myAIBodyTransform.position = myTransform.position + bodyOffset;
             AnimateAI();
@@ -128,72 +114,58 @@ namespace ParagonAI
 
 
         //Animations
-        void AnimateAI()
-        {
+        void AnimateAI() {
             //Correctly blend strafing and forwards/backwards movement
             animator.SetFloat(forwardsMoveHash, Vector3.Dot(myAIBodyTransform.forward, navi.GetDesiredVelocity()) / maxMovementSpeed, animationDampTime, Time.deltaTime);
             animator.SetFloat(sidewaysMoveHash, Vector3.Dot(myAIBodyTransform.right, navi.GetDesiredVelocity()) / maxMovementSpeed, animationDampTime, Time.deltaTime);
 
             //Check to see if we should crouch, and if so, crouch.  We only crouch if we are in cover and not firing or being suppressed.
-            if (myBaseScript.inCover && (!gunScript || !gunScript.IsFiring() || !myBaseScript.shouldFireFromCover) && Vector3.SqrMagnitude(myTransform.position - myBaseScript.GetCurrentCoverNodePos()) < minDistToCrouch && currentVelocityRatio < 0.3)
-            {
+            if (myBaseScript.inCover && (!gunScript || !gunScript.IsFiring() || !myBaseScript.shouldFireFromCover) && Vector3.SqrMagnitude(myTransform.position - myBaseScript.GetCurrentCoverNodePos()) < minDistToCrouch && currentVelocityRatio < 0.3) {
                 animator.SetBool(crouchingHash, true);
-            }
-            else
-            {
+            } else {
                 animator.SetBool(crouchingHash, false);
             }
         }
 
-        
-        public void StartSprinting()
-        {
-        	sprinting = true;
-        	
-        	//Make sure the animation in question exists.
+
+        public void StartSprinting() {
+            sprinting = true;
+
+            //Make sure the animation in question exists.
             //If the trigger is not found, no animation is played, but no error is thrown.
-            for (int i = 0; i < animator.parameters.Length; i++)
-            {
-                if (animator.parameters[i].name == "Sprinting")
-                {
+            for (int i = 0; i < animator.parameters.Length; i++) {
+                if (animator.parameters[i].name == "Sprinting") {
                     animator.SetBool(sprintingHash, true);
                 }
             }
-        }   
-        
-        public void StopSprinting()
-        {
-        	sprinting = false;
-        	
-        	//Make sure the animation in question exists.
+        }
+
+        public void StopSprinting() {
+            sprinting = false;
+
+            //Make sure the animation in question exists.
             //If the trigger is not found, no animation is played, but no error is thrown.
-            for (int i = 0; i < animator.parameters.Length; i++)
-            {
-                if (animator.parameters[i].name == "Sprinting")
-                {
+            for (int i = 0; i < animator.parameters.Length; i++) {
+                if (animator.parameters[i].name == "Sprinting") {
                     animator.SetBool(sprintingHash, false);
                 }
             }
-        }                   
-		
-		
-		public bool isSprinting()
-		{
-			return sprinting;
-		}
-	
-        public void PlayReloadAnimation()
-        {
+        }
+
+
+        public bool isSprinting() {
+            return sprinting;
+        }
+
+        public void PlayReloadAnimation() {
             animator.SetTrigger(reloadingHash);
         }
 
-        public void PlayFiringAnimation()
-        {
+        public void PlayFiringAnimation() {
             animator.SetTrigger(fireHash);
         }
 
-        public IEnumerator StartMelee()
-        {
+        public IEnumerator StartMelee() {
             //Stop aiming our weapon at the enemy
             rotateGunScript.Deactivate();
 
@@ -203,8 +175,7 @@ namespace ParagonAI
             directionToFace.y = 0;
 
             //Make sure we're rotating		
-            while (isPlaying && myAIBodyTransform && myBaseScript.targetTransform && Vector3.Angle(directionToFace, myAIBodyTransform.forward) > maxAngleDeviation)
-            {
+            while (isPlaying && myAIBodyTransform && myBaseScript.targetTransform && Vector3.Angle(directionToFace, myAIBodyTransform.forward) > maxAngleDeviation) {
                 directionToFace = -(myAIBodyTransform.position - myBaseScript.targetTransform.position);
                 directionToFace.y = 0;
 
@@ -215,8 +186,7 @@ namespace ParagonAI
             }
 
             //Play teh animation
-            if (isPlaying && myAIBodyTransform)
-            {
+            if (isPlaying && myAIBodyTransform) {
                 animator.SetTrigger(meleeHash);
                 yield return new WaitForSeconds(meleeAnimationLength);
             }
@@ -228,41 +198,34 @@ namespace ParagonAI
 
         //Stop errors from spamming the console when the game is stopped in the editor.
         bool isPlaying = true;
-        void OnApplicationQuit()
-        {
+        void OnApplicationQuit() {
             isPlaying = false;
         }
 
-        public IEnumerator WaitForAnimationToFinish()
-        {
+        public IEnumerator WaitForAnimationToFinish() {
             //Wait for transition to finish
-            while (animator.IsInTransition(1))
-            {
+            while (animator.IsInTransition(1)) {
                 yield return null;
             }
             //Wait for animation to finish
-            while (!animator.IsInTransition(1))
-            {
+            while (!animator.IsInTransition(1)) {
                 yield return null;
             }
             //wat for second for second transition to finish
-            while (animator.IsInTransition(1))
-            {
+            while (animator.IsInTransition(1)) {
                 yield return null;
             }
         }
 
         //Dynamic Objects
-        public IEnumerator DynamicObjectAnimation(string transitionName, Vector3 dir, DynamicObject dynamicObjectScript, float timeToWait)
-        {
+        public IEnumerator DynamicObjectAnimation(string transitionName, Vector3 dir, DynamicObject dynamicObjectScript, float timeToWait) {
             directionToFace = dir;
             useCustomRotation = true;
 
             directionToFace.y = 0;
 
             //make sure we're rotating to face the proper direction		
-            while (Vector3.Angle(directionToFace, myAIBodyTransform.forward) > maxAngleDeviation)
-            {
+            while (Vector3.Angle(directionToFace, myAIBodyTransform.forward) > maxAngleDeviation) {
                 Debug.DrawRay(myTransform.position, myTransform.forward * 100, Color.magenta);
                 Debug.DrawRay(myTransform.position, directionToFace * 100, Color.blue);
                 yield return null;
@@ -274,8 +237,7 @@ namespace ParagonAI
 
             //Play the animation and affect the object	
             bool shouldReactivate = false;
-            if (rotateGunScript.isEnabled)
-            {
+            if (rotateGunScript.isEnabled) {
                 rotateGunScript.Deactivate();
                 shouldReactivate = true;
             }
@@ -284,10 +246,8 @@ namespace ParagonAI
 
             //Make sure the animation in question exists.
             //If the trigger is not found, no animation is played, but no error is thrown.
-            for (int i = 0; i < animator.parameters.Length; i++)
-            {
-                if (animator.parameters[i].name == transitionName)
-                {
+            for (int i = 0; i < animator.parameters.Length; i++) {
+                if (animator.parameters[i].name == transitionName) {
                     animator.SetTrigger(Animator.StringToHash(transitionName));
                     //Wait until the animation finishes
                     //Wait for transition to finish
@@ -298,8 +258,7 @@ namespace ParagonAI
             }
 
             //Star aiming our weapon again.
-            if (shouldReactivate)
-            {
+            if (shouldReactivate) {
                 rotateGunScript.Activate();
             }
 
@@ -313,26 +272,20 @@ namespace ParagonAI
         bool currentlyRotating = true;
 
         //Rotating
-        void RotateAI()
-        {
-            if (currentlyRotating)
-            {
+        void RotateAI() {
+            if (currentlyRotating) {
                 //Rotate to look in the given direction, if one is given.
-                if (useCustomRotation)
-                {
+                if (useCustomRotation) {
                     newRotation = Quaternion.LookRotation(directionToFace);
                     newRotation.eulerAngles = new Vector3(0.0f, newRotation.eulerAngles.y, 0.0f);
                     myAIBodyTransform.rotation = Quaternion.Lerp(myAIBodyTransform.rotation, newRotation, turnSpeed * Time.deltaTime);
                     animator.SetFloat(forwardsMoveHash, 0, animationDampTime, Time.deltaTime);
                     animator.SetFloat(sidewaysMoveHash, 0, animationDampTime, Time.deltaTime);
-                }
-                else if ((myBaseScript.IsEnaging() && myBaseScript.targetTransform && !sprinting))
-                {
+                } else if ((myBaseScript.IsEnaging() && myBaseScript.targetTransform && !sprinting)) {
                     //Get angle between vector of movement and the actual direction enemyBody is facing				
                     myAngle = Vector3.Angle(myTransform.forward, myAIBodyTransform.forward);
 
-                    if (Vector3.Angle(-myAIBodyTransform.right, myTransform.forward) > 90)
-                    {
+                    if (Vector3.Angle(-myAIBodyTransform.right, myTransform.forward) > 90) {
                         myAngle = -myAngle;
                     }
 
@@ -346,21 +299,15 @@ namespace ParagonAI
 
                     //We will also always rotate to fact the target if the speed is too low, 
                     //because while standing still, the vector of movement becomes unreliable.	
-                    if (angleBetweenFor > minAngleToRotateBase && angleBetweenFor < 180 - minAngleToRotateBase)
-                    {
+                    if (angleBetweenFor > minAngleToRotateBase && angleBetweenFor < 180 - minAngleToRotateBase) {
                         newRotation = Quaternion.LookRotation(myBaseScript.targetTransform.position - myAIBodyTransform.position);
-                    }
-                    else
-                    {
+                    } else {
                         //Play correct animation			    				
-                        if (angleBetweenFor < 90)
-                        {
+                        if (angleBetweenFor < 90) {
                             newRotation = Quaternion.LookRotation(myTransform.forward);
                             animator.SetFloat(forwardsMoveHash, Vector3.Magnitude(navi.GetDesiredVelocity()) / maxMovementSpeed, animationDampTime, Time.deltaTime);
                             animator.SetFloat(sidewaysMoveHash, 0, animationDampTime, Time.deltaTime);
-                        }
-                        else
-                        {
+                        } else {
                             newRotation = Quaternion.LookRotation(-myTransform.forward);
                             animator.SetFloat(forwardsMoveHash, -Vector3.Magnitude(navi.GetDesiredVelocity()) / maxMovementSpeed, animationDampTime, Time.deltaTime);
                             animator.SetFloat(sidewaysMoveHash, 0, animationDampTime, Time.deltaTime);
@@ -373,9 +320,8 @@ namespace ParagonAI
                     //Smoothly rotate to face target						                                						                                
                     myAIBodyTransform.rotation = Quaternion.Slerp(myAIBodyTransform.rotation, newRotation, Time.deltaTime * turnSpeed);
                 }
-                //Look in the direction we are moving.
-                else
-                {
+                  //Look in the direction we are moving.
+                  else {
                     myAngle = 0;
 
                     newRotation = Quaternion.LookRotation(myTransform.forward);
@@ -387,8 +333,7 @@ namespace ParagonAI
         }
 
         //Setters
-        void SetHashes()
-        {
+        void SetHashes() {
             crouchingHash = Animator.StringToHash("Crouching");
             engagingHash = Animator.StringToHash("Engaging");
             reloadingHash = Animator.StringToHash("Reloading");
@@ -405,8 +350,7 @@ namespace ParagonAI
 
         //Called when the agent enters direct combat
         //The weapon is raised
-        public void SetEngaging()
-        {
+        public void SetEngaging() {
             //yield return null;
             if (!setHashes)
                 SetHashes();
@@ -415,11 +359,9 @@ namespace ParagonAI
 
         //Called when the agent loses track of the target, or the target is eliminated.
         //The weapon is lowered
-        public void SetDisengage()
-        {
+        public void SetDisengage() {
             //yield return null;
-            if (animator)
-            {
+            if (animator) {
                 if (!setHashes)
                     SetHashes();
                 animator.SetBool(engagingHash, false);

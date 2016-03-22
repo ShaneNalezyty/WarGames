@@ -6,10 +6,8 @@ using System.Collections;
  *  It will also warn other agents of itself when it lands, usually prompting them to move out of the way.
  * */
 
-namespace ParagonAI
-{
-    public class GrenadeScript : MonoBehaviour
-    {
+namespace ParagonAI {
+    public class GrenadeScript : MonoBehaviour {
         //Timer starts after the grenade hits the ground
         public float timeTilExplode = 3;
         public GameObject explosion;
@@ -35,12 +33,10 @@ namespace ParagonAI
 
         public float runAwayBuffer = 3;
 
-        void Go()
-        {
+        void Go() {
             float throwForce = 0;
             //Aims grenade at Target
-            if (hasTarget)
-            {
+            if (hasTarget) {
                 float xDist = Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(target.x, target.z));
                 float yDist = -(transform.position.y - target.y);
 
@@ -58,33 +54,28 @@ namespace ParagonAI
             StartCoroutine(StartDetonationTimer());
             //Because the grenade may skim the colliders of the agent before detonating, we want to wait a moment or two before being able to "warn" agents of the grenade
             //Warning will cause surrounding agents to attempt to escape from the grenade.
-            StartCoroutine(SetTimeUntilWarning()); 	
+            StartCoroutine(SetTimeUntilWarning());
         }
 
-        void Warn()
-        {
+        void Warn() {
             //Only send out one warning
-            if(!warned)
-                {
-                    warningRadius = warningRadius*warningRadius;
-                    ParagonAI.Target[] targets = GameObject.FindGameObjectWithTag("AI Controller").GetComponent<ParagonAI.ControllerScript>().GetCurrentTargets();
-				
-                    for(int i = 0; i < targets.Length; i++)
-                        {
-                            //If the grenade is close enough and has clear line of sight (ie: they are not on the other side of a wall), then warn them
-                            if(Vector3.SqrMagnitude(myRigidBody.position - targets[i].transform.position) < warningRadius && !Physics.Linecast(targets[i].transform.position, myRigidBody.position, layerMask))
-                                {
-                                    targets[i].targetScript.WarnOfGrenade(transform, warningRadius + runAwayBuffer);
-                                }
-                        }
-				
-				
-                    warned = true;
-                }	
+            if (!warned) {
+                warningRadius = warningRadius * warningRadius;
+                ParagonAI.Target[] targets = GameObject.FindGameObjectWithTag("AI Controller").GetComponent<ParagonAI.ControllerScript>().GetCurrentTargets();
+
+                for (int i = 0; i < targets.Length; i++) {
+                    //If the grenade is close enough and has clear line of sight (ie: they are not on the other side of a wall), then warn them
+                    if (Vector3.SqrMagnitude(myRigidBody.position - targets[i].transform.position) < warningRadius && !Physics.Linecast(targets[i].transform.position, myRigidBody.position, layerMask)) {
+                        targets[i].targetScript.WarnOfGrenade(transform, warningRadius + runAwayBuffer);
+                    }
+                }
+
+
+                warned = true;
+            }
         }
 
-        void DetonateGrenade()
-        {
+        void DetonateGrenade() {
             if (explosion)
                 Instantiate(explosion, transform.position, transform.rotation);
             else
@@ -93,26 +84,22 @@ namespace ParagonAI
             Destroy(gameObject);
         }
 
-        IEnumerator StartDetonationTimer()
-        {
+        IEnumerator StartDetonationTimer() {
             yield return new WaitForSeconds(timeTilExplode);
             DetonateGrenade();
         }
 
-        IEnumerator SetTimeUntilWarning()
-        {
+        IEnumerator SetTimeUntilWarning() {
             yield return new WaitForSeconds(timeUntilWarningCanBeGiven);
             canBeWarnedYet = true;
         }
 
-        void OnCollisionEnter(Collision collision)
-        {
+        void OnCollisionEnter(Collision collision) {
             if (canBeWarnedYet)
-                 Warn();
+                Warn();
         }
 
-        public void SetTarget(Vector3 pos)
-        {
+        public void SetTarget(Vector3 pos) {
             target = pos;
             hasTarget = true;
             Go();

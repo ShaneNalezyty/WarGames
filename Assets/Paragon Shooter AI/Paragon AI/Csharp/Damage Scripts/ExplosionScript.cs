@@ -6,12 +6,10 @@ using System.Collections.Generic;
  * Applies damage and force to all colliders within a given radius.
  * */
 
-namespace ParagonAI
-{
-    public class ExplosionScript : MonoBehaviour
-    {
-    	public string damageMethodName = "Damage";
-    
+namespace ParagonAI {
+    public class ExplosionScript : MonoBehaviour {
+        public string damageMethodName = "Damage";
+
         public float explosionRadius = 5.0f;
         public float explosionPower = 10.0f;
         public float upwardsPower = 10.0f;
@@ -24,36 +22,29 @@ namespace ParagonAI
 
         public bool shouldDoSingleHitboxDamage = false;
 
-        void Awake()
-        {
+        void Awake() {
             StartCoroutine(Go());
         }
 
-        IEnumerator Go()
-        {
+        IEnumerator Go() {
             Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
             Collider hit;
             List<Rigidbody> hitBodies = new List<Rigidbody>();
             int i = 0;
             float damageThisTime = damage;
 
-            for (i = 0; i < colliders.Length; i++)
-            {
+            for (i = 0; i < colliders.Length; i++) {
                 hit = colliders[i];
                 //Make sure we have line of sight to the collider
-                if (!Physics.Linecast(transform.position, hit.transform.position, layerMask))
-                {
+                if (!Physics.Linecast(transform.position, hit.transform.position, layerMask)) {
                     //Make damage fall off if further away.  Scaling is linear
-                    if(scaleDamageByDistance){
-                        damageThisTime = damage * Vector3.Distance(transform.position , hit.transform.position) / explosionRadius;
+                    if (scaleDamageByDistance) {
+                        damageThisTime = damage * Vector3.Distance(transform.position, hit.transform.position) / explosionRadius;
                     }
                     //Ideally, you should use single hitbox damage, but non-paragon AI scripts may not support it.
-                    if (shouldDoSingleHitboxDamage)
-                    {
+                    if (shouldDoSingleHitboxDamage) {
                         hit.GetComponent<Collider>().SendMessage("SingleHitBoxDamage", damageThisTime, SendMessageOptions.DontRequireReceiver);
-                    }
-                    else
-                    {
+                    } else {
                         //Will damage the same agent once for each collider
                         hit.GetComponent<Collider>().SendMessage(damageMethodName, damageThisTime, SendMessageOptions.DontRequireReceiver);
                     }
@@ -65,8 +56,7 @@ namespace ParagonAI
 
             //Make sure things are dead.
             yield return null;
-            for (i = 0; i < hitBodies.Count; i++)
-            {
+            for (i = 0; i < hitBodies.Count; i++) {
                 //Make sure the rigid body still exists so we don't get an error (it may be destroyed if the target is killed)
                 if (hitBodies[i])
                     hitBodies[i].AddExplosionForce(explosionPower, transform.position, explosionRadius, upwardsPower, ForceMode.Impulse);
@@ -76,10 +66,8 @@ namespace ParagonAI
             Destroy(gameObject, explosionTime);
         }
 
-        void OnDrawGizmos()
-        {
-            if (showBlastRadius)
-            {
+        void OnDrawGizmos() {
+            if (showBlastRadius) {
                 Gizmos.color = Color.yellow;
                 Gizmos.DrawWireSphere(transform.position, explosionRadius);
             }

@@ -8,10 +8,8 @@ using System.Collections;
  * Note that the body part's colliders will still linger.
  * */
 
-namespace ParagonAI
-{
-    public class DismembermentScript : MonoBehaviour
-    {
+namespace ParagonAI {
+    public class DismembermentScript : MonoBehaviour {
 
         public bool isEnabled = true;
         public ParagonAI.HitBox myHitBox;
@@ -23,19 +21,15 @@ namespace ParagonAI
         public Transform effectSpawn;
         public bool shouldParentEffectToSpawn;
 
-        
-        public void OnAIDeath()
-        {
-            if (isEnabled && myHitBox.damageTakenThisFrame > damageMinimum)
-            {
+
+        public void OnAIDeath() {
+            if (isEnabled && myHitBox.damageTakenThisFrame > damageMinimum) {
                 //Make the necessary parts of the mesh transparent.
                 myRenderer.materials = materialSet;
-                if (effect)
-                {
+                if (effect) {
                     GameObject nE = (GameObject)Instantiate(effect, effectSpawn.position, effectSpawn.rotation);
                     //If you want the effect to follow the ragdoll as it falls.  
-                    if (shouldParentEffectToSpawn)
-                    {
+                    if (shouldParentEffectToSpawn) {
                         nE.transform.parent = effectSpawn;
                     }
                 }

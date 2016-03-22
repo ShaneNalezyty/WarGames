@@ -8,10 +8,8 @@ using System.Collections;
  * */
 
 
-namespace ParagonAI
-{
-    public class CoverNodeScript : MonoBehaviour
-    {
+namespace ParagonAI {
+    public class CoverNodeScript : MonoBehaviour {
 
         public Vector3 SightNodeOffSet = new Vector3(0, 1, 0);
 
@@ -27,14 +25,12 @@ namespace ParagonAI
 
         private bool occupied = false;
 
-        void Start()
-        {
+        void Start() {
             SetPositions();
         }
 
 
-        void SetPositions()
-        {
+        void SetPositions() {
             myPosition = transform.position;
 
             sightNodePosition = transform.position;
@@ -44,16 +40,12 @@ namespace ParagonAI
             sightNodePosition += (transform.right * SightNodeOffSet.z);
         }
 
-        public bool ValidCoverCheck(Vector3 targetPos)
-        {
+        public bool ValidCoverCheck(Vector3 targetPos) {
             //Check to see if this cover node is safe
-            if (isActive)
-            {
-                if (Physics.Linecast(myPosition, targetPos, layerMask))
-                {
+            if (isActive) {
+                if (Physics.Linecast(myPosition, targetPos, layerMask)) {
                     //Check to see if this cover node has LOS to target from firingPos
-                    if (!Physics.Linecast(sightNodePosition, targetPos, layerMask))
-                    {
+                    if (!Physics.Linecast(sightNodePosition, targetPos, layerMask)) {
                         return true;
                     }
                 }
@@ -63,8 +55,7 @@ namespace ParagonAI
 
         }
 
-        public bool CheckForSafety(Vector3 targetPos)
-        {
+        public bool CheckForSafety(Vector3 targetPos) {
             //Debug.DrawLine(myPosition, targetPos, Color.green);
             //Debug.Break();
             return (Physics.Linecast(myPosition, targetPos, layerMask));
@@ -72,10 +63,8 @@ namespace ParagonAI
 
 
 
-        void OnDrawGizmosSelected()
-        {
-            if (!alwaysDisplay)
-            {
+        void OnDrawGizmosSelected() {
+            if (!alwaysDisplay) {
                 SetPositions();
 
                 if (occupied)
@@ -90,10 +79,8 @@ namespace ParagonAI
             }
         }
 
-        void OnDrawGizmos()
-        {
-            if (alwaysDisplay)
-            {
+        void OnDrawGizmos() {
+            if (alwaysDisplay) {
                 SetPositions();
 
                 if (occupied)
@@ -108,39 +95,32 @@ namespace ParagonAI
             }
         }
 
-        public Vector3 GetSightNodePosition()
-        {
+        public Vector3 GetSightNodePosition() {
             return sightNodePosition;
         }
 
-        public Vector3 GetPosition()
-        {
+        public Vector3 GetPosition() {
             return myPosition;
         }
 
-        public void ActivateNode(float t)
-        {
+        public void ActivateNode(float t) {
             StartCoroutine(EnableThisNode(t));
         }
 
-        IEnumerator EnableThisNode(float t)
-        {
+        IEnumerator EnableThisNode(float t) {
             yield return new WaitForSeconds(t);
             isActive = true;
         }
 
-        public void DeActivateNode()
-        {
+        public void DeActivateNode() {
             isActive = false;
         }
 
-        public bool isOccupied()
-        {
+        public bool isOccupied() {
             return occupied;
         }
 
-        public void setOccupied(bool b)
-        {
+        public void setOccupied(bool b) {
             occupied = b;
         }
 

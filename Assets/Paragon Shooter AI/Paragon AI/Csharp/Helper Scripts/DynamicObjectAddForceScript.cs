@@ -6,10 +6,8 @@ using System.Collections;
  * Used to allow an agent to knoeck something over, or throw it into the air
  * */
 
-namespace ParagonAI
-{
-    public class DynamicObjectAddForceScript : MonoBehaviour
-    {
+namespace ParagonAI {
+    public class DynamicObjectAddForceScript : MonoBehaviour {
 
         public Rigidbody rigidBodyToAddForceTo;
         public float forceToAdd = 100;
@@ -22,17 +20,14 @@ namespace ParagonAI
 
         public ParagonAI.CoverNodeScript coverNodeToActivate;
 
-        void Awake()
-        {
+        void Awake() {
             //If the agent is knocking something over to make cover, we don't want the cover node to be used until the cover is created.
             if (coverNodeToActivate)
                 coverNodeToActivate.transform.parent = null;
         }
 
-        public IEnumerator UseDynamicObject()
-        {
-            if (rigidBodyToAddForceTo)
-            {
+        public IEnumerator UseDynamicObject() {
+            if (rigidBodyToAddForceTo) {
                 //Add force to the rigid Body
                 rigidBodyToAddForceTo.isKinematic = false;
                 Vector3 VectorToAddForceIn = GetVectorToAddForceIn() * forceToAdd;
@@ -42,8 +37,7 @@ namespace ParagonAI
                 if (coverNodeToActivate)
                     coverNodeToActivate.ActivateNode(1.0f);
 
-                if (shouldResetKinematic)
-                {
+                if (shouldResetKinematic) {
                     //Make sure whatever it is doesn't get knocked around afterwards
                     yield return new WaitForSeconds(timeUntilIsKinematicAgain);
                     rigidBodyToAddForceTo.isKinematic = true;
@@ -51,17 +45,14 @@ namespace ParagonAI
             }
         }
 
-        Vector3 GetVectorToAddForceIn()
-        {
+        Vector3 GetVectorToAddForceIn() {
             return (transform.forward * relativeVectorToAddForceIn.z +
                     transform.up * relativeVectorToAddForceIn.y +
                     transform.right * relativeVectorToAddForceIn.x);
         }
 
-        void OnDrawGizmos()
-        {
-            if (showVector)
-            {
+        void OnDrawGizmos() {
+            if (showVector) {
                 Gizmos.color = Color.blue;
                 Gizmos.DrawRay(rigidBodyToAddForceTo.position, GetVectorToAddForceIn());
             }

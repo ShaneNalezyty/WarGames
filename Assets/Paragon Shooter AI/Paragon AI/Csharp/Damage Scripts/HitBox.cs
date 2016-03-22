@@ -6,10 +6,8 @@ using System.Collections;
  * 
  * */
 
-namespace ParagonAI
-{
-    public class HitBox : MonoBehaviour
-    {
+namespace ParagonAI {
+    public class HitBox : MonoBehaviour {
         public float damageMultiplyer = 1;
         private Vector3 addForceVector;
 
@@ -21,25 +19,20 @@ namespace ParagonAI
         public float damageTakenThisFrame = 0;
         //public bool storeDamage = false;
 
-        void Awake()
-        {
+        void Awake() {
             myRigidBody = gameObject.GetComponent<Rigidbody>();
         }
-		
-		public void ApplyDamage(float damage)
-		{
-			Damage(damage);
-		}
-		
-		public void ApplyDamage(float damage, float force, Vector3 dir)
-		{
-			Damage(damage, force, dir);
-		}
-		
-        public void Damage(float damage)
-        {
-            if (myScript)
-            {
+
+        public void ApplyDamage(float damage) {
+            Damage(damage);
+        }
+
+        public void ApplyDamage(float damage, float force, Vector3 dir) {
+            Damage(damage, force, dir);
+        }
+
+        public void Damage(float damage) {
+            if (myScript) {
                 //Use the multiplier to take differing amounts of damage depending on where the AI is hit
                 damage = damage * damageMultiplyer;
 
@@ -51,14 +44,12 @@ namespace ParagonAI
             }
         }
 
-        public void Damage(float damage, float force, Vector3 dir)
-        {
-            if (myScript)
-            {
+        public void Damage(float damage, float force, Vector3 dir) {
+            if (myScript) {
                 //Use the multiplier to take differing amounts of damage depending on where the AI is hit
                 damage = damage * damageMultiplyer;
 
-                StartCoroutine(AddForceVector(force*dir));
+                StartCoroutine(AddForceVector(force * dir));
 
                 //Store the amount of damage taken for the dismemberment sript
                 StartCoroutine("StoreDamageTakenRecently", damage);
@@ -69,12 +60,10 @@ namespace ParagonAI
         }
 
         //Use for explosives
-        public void SingleHitBoxDamage(float damage)
-        {
+        public void SingleHitBoxDamage(float damage) {
             //We don't do the damage multiplier here because this is used for explosions, and we  don't want to leave it up to RNG which hitbox is used first
-            if (myScript)
-            {
-                    //StartCoroutine("StoreDamageTakenRecently", damage);
+            if (myScript) {
+                //StartCoroutine("StoreDamageTakenRecently", damage);
 
                 if (canDoSingleHealthBoxDamage)
                     StartCoroutine(myScript.SingleHitBoxDamage(damage));
@@ -83,8 +72,7 @@ namespace ParagonAI
             }
         }
 
-        public IEnumerator StoreDamageTakenRecently(float d)
-        {
+        public IEnumerator StoreDamageTakenRecently(float d) {
             //Only store the damage this frame.  That way only a single strong damage source will trigger the dismemberment script.
             damageTakenThisFrame += d;
             yield return 0;
@@ -92,13 +80,11 @@ namespace ParagonAI
         }
 
         //Do I even need this?
-        public IEnumerator AddForceVector(Vector3 fv)
-        {
+        public IEnumerator AddForceVector(Vector3 fv) {
             yield return null;
-            if (myRigidBody)
-                {
-                    myRigidBody.AddForce(fv, ForceMode.Impulse);
-                }
+            if (myRigidBody) {
+                myRigidBody.AddForce(fv, ForceMode.Impulse);
+            }
         }
     }
 }

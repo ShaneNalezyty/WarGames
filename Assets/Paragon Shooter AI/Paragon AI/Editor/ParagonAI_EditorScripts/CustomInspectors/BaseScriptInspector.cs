@@ -12,7 +12,8 @@ public class BaseScriptInspector : Editor
     //bool showGeneralBehaviours = true;
     bool showSearching = false;
     bool showCover = false;
-    bool showSkirmish = false;
+    //bool showSkirmish = false;
+    bool showSkirmish;
     bool showDodge = false;
     bool showPatrolling = false;
     bool showWandering = false;

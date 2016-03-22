@@ -5,10 +5,8 @@ using System.Collections;
  * Moves the demo camera around.  Not part of the Paragon AI system.
  * */
 
-namespace ParagonAI
-{
-    public class MoveCameraScript : MonoBehaviour
-    {
+namespace ParagonAI {
+    public class MoveCameraScript : MonoBehaviour {
 
         public float rotateSpeed = 3;
         public float moveSpeedSlow = 1;
@@ -21,15 +19,13 @@ namespace ParagonAI
         private Vector3 origPos;
         private Quaternion origRot;
 
-        void Awake()
-        {
+        void Awake() {
             origPos = transform.position;
             origRot = transform.rotation;
         }
 
-        void Update()
-        {
-           // if (Input.GetKey(KeyCode.R))
+        void Update() {
+            // if (Input.GetKey(KeyCode.R))
             //{
             //    Application.LoadLevel(0);
             //}
@@ -38,18 +34,14 @@ namespace ParagonAI
             xRotation = transform.eulerAngles.x;
             yRotation = transform.eulerAngles.y;
 
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
+            if (Input.GetKey(KeyCode.LeftShift)) {
                 currentSpeed = moveSpeedFast;
-            }
-            else
-            {
+            } else {
                 currentSpeed = moveSpeedSlow;
             }
 
             //Camera Motion	
-            if (Input.GetButton("Fire2") || Input.GetButton("Fire1"))
-            {
+            if (Input.GetButton("Fire2") || Input.GetButton("Fire1")) {
                 //Look 	
                 yRotation += Input.GetAxis("Mouse X") * rotateSpeed;
                 xRotation -= Input.GetAxis("Mouse Y") * rotateSpeed;
@@ -64,12 +56,9 @@ namespace ParagonAI
                 float inputZ = 0;
 
                 //Use raw keycodes just so that we can make sure it's compatable without needing weird input settings.
-                if (Input.GetKey(KeyCode.E))
-                {
+                if (Input.GetKey(KeyCode.E)) {
                     inputZ = 0.75f;
-                }
-                else if (Input.GetKey(KeyCode.Q))
-                {
+                } else if (Input.GetKey(KeyCode.Q)) {
                     inputZ = -0.75f;
                 }
 
@@ -79,8 +68,7 @@ namespace ParagonAI
                 transform.Translate(Vector3.up * inputZ * currentSpeed, transform);
             }
 
-            if (Input.GetKey(KeyCode.V))
-            {
+            if (Input.GetKey(KeyCode.V)) {
                 transform.position = origPos;
                 transform.rotation = origRot;
             }
@@ -88,10 +76,8 @@ namespace ParagonAI
 
         public bool showControls = true;
 
-        void OnGUI()
-        {
-            if (showControls)
-            {
+        void OnGUI() {
+            if (showControls) {
                 Rect r = new Rect(10, 10, 1000, 1000);
                 // GUI.Label(r, "Use Right Mouse + WASDQE to move the camera.  R to restart");
                 GUI.Label(r, "Use Right Mouse + WASDQE to move the camera. ");
