@@ -16,9 +16,14 @@ public class SoundScript : MonoBehaviour {
 	[Range (0.0f, 1.0f)]
 	public float oddsToPlayDamagedAudio = 0.5f;
 	public SoundClip[] damagedAudio;
-	
-	//Spotted
-	[Range (0.0f, 1.0f)]
+
+    //Death
+    [Range(0.0f, 1.0f)]
+    public float oddsToPlayDeathAudio = 0.5f;
+    public SoundClip[] deathAudio;
+
+    //Spotted
+    [Range (0.0f, 1.0f)]
 	public float oddsToPlaySpottedTargetAudio = 0.5f;
 	public SoundClip[] spottedTargetAudio;
 	
@@ -31,9 +36,14 @@ public class SoundScript : MonoBehaviour {
 	[Range (0.0f, 1.0f)]
 	public float oddsToPlayCoverAudio = 0.5f;
 	public SoundClip[] coverAudio;
-	
-    //Take input from other scripts
-	public void PlayDamagedAudio()
+
+    //Reloading
+    [Range(0.0f, 1.0f)]
+    public float oddsToPlayReloadAudio = 0.5f;
+    public SoundClip[] reloadAudio;
+
+        //Take input from other scripts
+        public void PlayDamagedAudio()
 		{
 			PlayAClip(damagedAudio, oddsToPlayDamagedAudio);
 		}
@@ -52,8 +62,23 @@ public class SoundScript : MonoBehaviour {
 		{
 			PlayAClip(coverAudio, oddsToPlayCoverAudio);
 		}
-		
-	public void PlayAClip(SoundClip[] audios,float odds)
+
+    public void PlayReloadAudio()
+        {
+            PlayAClip(reloadAudio, oddsToPlayReloadAudio);
+        }
+
+    public void PlayDeathAudio()
+        {
+            PlayAClip(deathAudio, oddsToPlayDeathAudio);
+        }
+    
+    public void OnAIDeath()
+        {
+            PlayDeathAudio();
+        }
+
+        public void PlayAClip(SoundClip[] audios,float odds)
 		{
             //Make sure we can play an audio clip
 			if(audioEnabled && GetComponent<AudioSource>() && !GetComponent<AudioSource>().isPlaying && Random.value < odds && audios != null)
@@ -88,6 +113,7 @@ public class SoundScript : MonoBehaviour {
 								{
 									if(GetComponent<AudioSource>().enabled)
 										GetComponent<AudioSource>().PlayOneShot(audios[i].audioClip);
+                                    return;
 								}
 						}
 				}

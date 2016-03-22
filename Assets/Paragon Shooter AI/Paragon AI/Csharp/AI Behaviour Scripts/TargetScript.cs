@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 
 /*
@@ -42,7 +43,7 @@ namespace ParagonAI
         public float timeBetweenTargetChecksIfEngaging = 7;
         public float timeBetweenTargetChecksIfNotEngaging = 12;
 
-        public bool willEverLoseAwareness = false;
+        //public bool willEverLoseAwareness = false;
 
         public float timeBetweenLOSChecks = 0.5f;
 
@@ -71,7 +72,7 @@ namespace ParagonAI
         public bool canAcceptDynamicObjectRequests = false;
 
 
-
+		public float maxDistToNoticeTarget = 9999f;
 
         // Use this for initialization
         void Awake()
@@ -92,7 +93,7 @@ namespace ParagonAI
             if (ParagonAI.ControllerScript.currentController)
                 myUniqueID = ParagonAI.ControllerScript.currentController.AddTarget(myTeamID, targetObjectTransform, this);
             else
-                Debug.LogWarning("No AI Controller Found!");
+                UnityEngine.Debug.LogWarning("No AI Controller Found!");
 
 
             if (!eyeTransform)
@@ -100,6 +101,7 @@ namespace ParagonAI
 
 
             effectiveFOV = myFieldOfView / 2;
+            maxDistToNoticeTarget = maxDistToNoticeTarget*maxDistToNoticeTarget;
 
             if (myAIBaseScript)
             {
@@ -363,18 +365,24 @@ namespace ParagonAI
                         }
                     }
                 }
+                                                    
+               	if(currentEnemyTarget != null)
+                {	
+                    AlertAlliesOfEnemy_Shout();
+                }    
+                
                 //If all of the above fails, pick a random target- even if it's one we haven't seen
                 if (currentEnemyTarget == null && enemyTargets.Length > 0)
                 {
                     currentEnemyTarget = enemyTargets[Random.Range(0, enemyTargets.Length - 1)];
                 }
-
-                if (currentEnemyTarget != null)
-                {
-                    AlertAlliesOfEnemy_Shout();
+            
+				if(currentEnemyTarget != null)
+                {	
                     myAIBaseScript.SetMyTarget(currentEnemyTarget.transform, currentEnemyTarget.targetScript.myLOSTarget);
                 }
-                else
+                if (currentEnemyTarget == null)
+                
                 {
                     myAIBaseScript.RemoveMyTarget();
                 }
@@ -395,6 +403,10 @@ namespace ParagonAI
         {
             if (myAIBaseScript && shouldReactToNewSound && !myAIBaseScript.IsEnaging())
             {
+            	//StackTrace st = new StackTrace();
+            	//UnityEngine.Debug.Log(st.GetFrame(1).GetMethod().Name);
+            	//UnityEngine.Debug.Break();
+            	
                 CheckForLOSAwareness(true);
                 myAIBaseScript.StartCoroutine("HearSound", soundPos);
                 myAIBaseScript.SetAlertSpeed();
@@ -420,18 +432,20 @@ namespace ParagonAI
                     //Debug
                     if (debugFieldOfView)
                         {
-                            Debug.DrawRay(eyeTransform.position, eyeTransform.forward * 20, Color.green, timeBetweenLOSChecks);
+                            UnityEngine.Debug.DrawRay(eyeTransform.position, eyeTransform.forward * 20, Color.green, timeBetweenLOSChecks);
                             Vector3 tarVec = Quaternion.AngleAxis(effectiveFOV, Vector3.up) * eyeTransform.forward;
-                            Debug.DrawRay(eyeTransform.position, tarVec * 20, Color.green, timeBetweenLOSChecks);
+                            UnityEngine.Debug.DrawRay(eyeTransform.position, tarVec * 20, Color.green, timeBetweenLOSChecks);
                             tarVec = Quaternion.AngleAxis(-effectiveFOV, Vector3.up) * eyeTransform.forward;
-                            Debug.DrawRay(eyeTransform.position, tarVec * 20, Color.green, timeBetweenLOSChecks);
+                            UnityEngine.Debug.DrawRay(eyeTransform.position, tarVec * 20, Color.green, timeBetweenLOSChecks);
                         }
 
                     //Check for line of sight	
 					//Sometimes we may not want to restrict the agent's senses to their field of view.	
                     //Stupid checks to make sure we still have the transforms because Unity can't pass a function telling us that a scene is about to be loaded
-                    if (eyeTransform && enemyTargets[i].transform && (shouldCheck360Degrees || Vector3.Angle(eyeTransform.forward, enemyTargets[i].transform.position - eyeTransform.position) < effectiveFOV))
+                    if (eyeTransform && enemyTargets[i].transform && (shouldCheck360Degrees || Vector3.Angle(eyeTransform.forward, enemyTargets[i].transform.position - eyeTransform.position) < effectiveFOV) && Vector3.SqrMagnitude(eyeTransform.position - enemyTargets[i].transform.position) < maxDistToNoticeTarget)
                     {
+                    	//(Vector3.Angle(eyeTransform.forward, enemyTargets[i].transform.position - eyeTransform.position));
+                    	//print(shouldCheck360Degrees);
                         if ( !Physics.Linecast(eyeTransform.position, enemyTargets[i].transform.position, layerMask))
                         {
                             NoticeATarget(enemyTargets[i]);
@@ -453,7 +467,13 @@ namespace ParagonAI
         //Pass on the dynamic object paramaters to other scripts
         public bool UseDynamicObject(Transform newMovementObjectTransform, string newAnimationToUse, string methodToCall, bool requireEngaging)
         {
-            if (canAcceptDynamicObjectRequests && myAIBaseScript.SetDynamicObject(newMovementObjectTransform, newAnimationToUse, methodToCall, requireEngaging))
+            return UseDynamicObject(newMovementObjectTransform, newAnimationToUse, methodToCall, requireEngaging, 1.0f);
+        }
+
+        //Pass on the dynamic object paramaters to other scripts
+        public bool UseDynamicObject(Transform newMovementObjectTransform, string newAnimationToUse, string methodToCall, bool requireEngaging, float timeToWait)
+        {
+            if (canAcceptDynamicObjectRequests && myAIBaseScript.SetDynamicObject(newMovementObjectTransform, newAnimationToUse, methodToCall, requireEngaging, timeToWait))
             {
                 return true;
             }

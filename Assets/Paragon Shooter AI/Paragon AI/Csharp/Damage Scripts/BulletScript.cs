@@ -11,6 +11,8 @@ namespace ParagonAI
     public class BulletScript : MonoBehaviour
     {
 
+		public string damageMethodName = "Damage";
+
         public float speed = 1000;
         public LayerMask layerMask;
         public float maxLifeTime = 3;
@@ -39,6 +41,8 @@ namespace ParagonAI
 
         public float minDistToDetonate = 0.5f;
         private float minDistToDetonateSqr;
+        
+        
 
         void Awake()
         {
@@ -66,7 +70,7 @@ namespace ParagonAI
         {
             //Reduce the enemy's health
             //Does NOT travel up the heirarchy.  
-            hit.collider.SendMessage("Damage", damage, SendMessageOptions.DontRequireReceiver);
+            hit.collider.SendMessage(damageMethodName, damage, SendMessageOptions.DontRequireReceiver);
 
             //Produce the appropriate special effect
             if (hit.transform.tag == hitEffectTag && hitEffect)

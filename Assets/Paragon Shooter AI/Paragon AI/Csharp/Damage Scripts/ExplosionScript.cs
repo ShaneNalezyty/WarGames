@@ -10,6 +10,8 @@ namespace ParagonAI
 {
     public class ExplosionScript : MonoBehaviour
     {
+    	public string damageMethodName = "Damage";
+    
         public float explosionRadius = 5.0f;
         public float explosionPower = 10.0f;
         public float upwardsPower = 10.0f;
@@ -53,7 +55,7 @@ namespace ParagonAI
                     else
                     {
                         //Will damage the same agent once for each collider
-                        hit.GetComponent<Collider>().SendMessage("Damage", damageThisTime, SendMessageOptions.DontRequireReceiver);
+                        hit.GetComponent<Collider>().SendMessage(damageMethodName, damageThisTime, SendMessageOptions.DontRequireReceiver);
                     }
 
                     if (hit.GetComponent<Rigidbody>())

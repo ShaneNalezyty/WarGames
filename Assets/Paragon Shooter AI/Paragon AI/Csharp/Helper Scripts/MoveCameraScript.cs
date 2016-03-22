@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 using System.Collections;
 
 /*
@@ -30,10 +29,10 @@ namespace ParagonAI
 
         void Update()
         {
-            if (Input.GetKey(KeyCode.R))
-            {
-                SceneManager.LoadScene(0);
-            }
+           // if (Input.GetKey(KeyCode.R))
+            //{
+            //    Application.LoadLevel(0);
+            //}
 
 
             xRotation = transform.eulerAngles.x;
@@ -94,7 +93,8 @@ namespace ParagonAI
             if (showControls)
             {
                 Rect r = new Rect(10, 10, 1000, 1000);
-                GUI.Label(r, "Use Right Mouse + WASDQE to move the camera.  R to restart");
+                // GUI.Label(r, "Use Right Mouse + WASDQE to move the camera.  R to restart");
+                GUI.Label(r, "Use Right Mouse + WASDQE to move the camera. ");
             }
         }
 

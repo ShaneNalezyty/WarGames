@@ -78,6 +78,10 @@ namespace ParagonAI
 
         public void Activate()
         {
+        	if(shouldDebug)
+        		{
+        			Debug.Log(UnityEngine.StackTraceUtility.ExtractStackTrace ());
+        		}
             spineRotationLastFrame = spineBone.rotation;
             isEnabled = true;
         }

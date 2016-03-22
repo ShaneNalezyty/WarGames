@@ -36,12 +36,15 @@ namespace ParagonAI
 
         //Dynamic cover
         public bool shouldUseDynamicCover = true;
-        public float dynamicCoverMaxDistFromMe = 60;
+        public bool useFirstDynamicCoverFound = true;
+        public float dynamicCoverMaxDistFromMe = 15f;
         //private var dynamicCoverMaxDistFromMeSqr : float;
         public float dynamicCoverNodeHeightOffset = 0.3f;
         public float dynamicCoverNodeFireOffset = 1.5f;
         public float dynamicCoverWidthNeededToHide = 1.5f;
         public float maxDistBehindDynamicCover = 5;
+        
+        public bool useOnlyStaticCover = true;
 
         public float defendingDist = 20;
         private float defendingDistSquared = 20;
@@ -49,10 +52,18 @@ namespace ParagonAI
 
         [HideInInspector]
         public LayerMask layerMask;
+        
+        Vector3[] verts;
+        
+        ParagonAI.NavmeshInterface navI;
 
         // Use this for initialization
         void Start()
         {
+        	navI = gameObject.GetComponent<ParagonAI.BaseScript>().navI;
+        	if(useOnlyStaticCover){
+        		verts = navI.GetNavmeshVertices();
+        	}
             myTransform = transform;
             //dynamicCoverMaxDistFromMeSqr = dynamicCoverMaxDistFromMe*dynamicCoverMaxDistFromMe;			
             maxCoverDistSqrd = maxCoverDistFromEnemy * maxCoverDistFromEnemy;
@@ -263,7 +274,9 @@ namespace ParagonAI
         //Dynamic Cover
         ParagonAI.CoverData FindDynamicCover(Vector3 targetTransformPos, Transform transformToDefend)
         {
-            Vector3[] verts = NavMesh.CalculateTriangulation().vertices;
+        	if(!useOnlyStaticCover){
+            	verts = verts = navI.GetNavmeshVertices();
+            }
             Vector3 myPos;
             if (!transformToDefend)
                 myPos = myTransform.position;
@@ -297,7 +310,7 @@ namespace ParagonAI
                     currDistTarget = Vector3.SqrMagnitude(verts[i] - targetTransformPos);
                     distBetweenMeAndCoverNow = Vector3.SqrMagnitude(verts[i] - myPos);
 
-                    if (currDistTarget > minCoverDistSqrd && currDistTarget < maxCoverDistSqrd && distBetweenMeAndCoverNow < closestDistToMeSoFarSqr)
+                    if (distBetweenMeAndCoverNow < closestDistToMeSoFarSqr && currDistTarget > minCoverDistSqrd && currDistTarget < maxCoverDistSqrd)
                     {
                         verts[i].y += dynamicCoverNodeFireOffset;
 
@@ -321,6 +334,10 @@ namespace ParagonAI
                                     coverHidePos = hidingPosCheckingNow;
                                     coverFirePos = verts[i];
                                     shouldCont = false;
+                                    if (useFirstDynamicCoverFound)
+                                    {
+                                        break;
+                                    }
                                 }
 
                                 //Check for side cover
@@ -338,8 +355,13 @@ namespace ParagonAI
                                             coverHidePos = hidingPosCheckingNow;
                                             coverFirePos = verts[i];
                                             shouldCont = false;
+                                            if (useFirstDynamicCoverFound)
+                                            {
+                                                break;
+                                            }
                                         }
-
+                                        //Taken out for performance
+										/*
                                         hidingPosCheckingNow = verts[i] + myTransform.forward * x * dynamicCoverWidthNeededToHide;
 
                                         //If we're safe
@@ -349,7 +371,11 @@ namespace ParagonAI
                                             closestDistToMeSoFarSqr = distBetweenMeAndCoverNow;
                                             coverHidePos = hidingPosCheckingNow;
                                             coverFirePos = verts[i];
-                                        }
+                                            if (useFirstDynamicCoverFound)
+                                            {
+                                                i = verts.Length;
+                                            }
+                                        }*/
                                     }
                                 }
 

@@ -28,6 +28,8 @@ namespace ParagonAI
         [Range(0.0f, 1.0f)]
         public float oddsToLookEachCycle = 0.1f;
 
+        public float timeToWait = 1.0f;
+
         void Start()
         {
             if (dynamicObjectTransform)
@@ -54,7 +56,7 @@ namespace ParagonAI
                     for (int i = 0; i < currentListOfTargets.Length; i++)
                     {
                         //Query the agent to see whether ot not it will use the object.
-                        if (currentListOfTargets[i].targetScript.UseDynamicObject(dynamicObjectTransform, dynamicObjectAnimationClipKey, dynamicObjectMethod, requireEngaging))
+                        if (currentListOfTargets[i].targetScript.UseDynamicObject(dynamicObjectTransform, dynamicObjectAnimationClipKey, dynamicObjectMethod, requireEngaging, timeToWait))
                         {
                             //If a suitable agent is found, don't look any more.
                             DisableDynamicObject();

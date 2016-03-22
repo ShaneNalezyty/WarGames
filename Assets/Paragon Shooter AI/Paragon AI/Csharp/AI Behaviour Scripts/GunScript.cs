@@ -12,6 +12,7 @@ public class GunScript : MonoBehaviour {
 	//Stuff
 	public ParagonAI.BaseScript myAIBaseScript;
 	public ParagonAI.AnimationScript animationScript;
+    public ParagonAI.SoundScript soundScript;
     public AudioSource audioSource;
 
 	int[] enemyTeams;	
@@ -100,16 +101,25 @@ public class GunScript : MonoBehaviour {
 	float rayDist;
 
 	//Sound
-	public float soundRadius = 7;	
+	public float soundRadius = 7;
 
-	
-	void Awake (){
+    public float minimumDistToFireGun = 0;
+    public float maximumDistToFireGun = 9999;
+
+
+
+        void Awake (){
 		//Set default values, calculate squared distances, etc.
 		LOSLayermask = ParagonAI.ControllerScript.currentController.GetLayerMask();
 
         if (!audioSource)
             if (bulletSpawn.gameObject.GetComponent<AudioSource>())
                 audioSource = bulletSpawn.gameObject.GetComponent<AudioSource>();
+
+        if(gameObject.GetComponent<SoundScript>())
+            {
+                soundScript = gameObject.GetComponent<SoundScript>();
+            }
 
 		isFiring = false;
 		isWaiting= false;
@@ -120,7 +130,9 @@ public class GunScript : MonoBehaviour {
 		maxBurstsPerVolley = (int)(maxRoundsPerVolley/shotsPerBurst);	
 		maxFiringAngle /= 2;
 		maxSecondaryFireAngle /= 2;
-	}
+        minimumDistToFireGun = minimumDistToFireGun * minimumDistToFireGun;
+        maximumDistToFireGun = maximumDistToFireGun * maximumDistToFireGun;
+    }
 		
 	// Stuff we need done after all other stuff is set up
 	void Start () {
@@ -161,7 +173,7 @@ public class GunScript : MonoBehaviour {
                 //If we have clear LoS to the LOSTargetTransform, fire
                 //You may want to check for line of sight to a position right above the target's head (for example)
                 //This will allow your agent to lay down suppressing fire even if they can't see the target.
-				if(LOSTargetTransform)
+				if(LOSTargetTransform && !animationScript.isSprinting())
 					{
                         //See if we can use our secondary fire
                         //While a grenade may not need LoS, a homing missile might
@@ -211,6 +223,10 @@ public class GunScript : MonoBehaviour {
 					{
 						animationScript.PlayReloadAnimation();
 					}
+                if(soundScript)
+                    {
+                        soundScript.PlayReloadAudio();
+                    }
 				yield return new WaitForSeconds(reloadTime);
 				currentBulletsUntilReload = bulletsUntilReload;
 				yield return new WaitForSeconds(minPauseTime * Random.value);
@@ -220,11 +236,14 @@ public class GunScript : MonoBehaviour {
 	
 	IEnumerator Fire()
 	{
+            //Check Distances
+    float distSqr = Vector3.SqrMagnitude(bulletSpawn.position - LOSTargetTransform.position);
+    if(minimumDistToFireGun <= distSqr && maximumDistToFireGun >= distSqr)      
         //Make sure we don't fire more bullets than the number remaining in the agent's magazine.
 		currentRoundsPerVolley = Mathf.Min(Random.Range(minBurstsPerVolley, maxBurstsPerVolley), currentBulletsUntilReload);
 	
         //Make sure we have bullets left and stop firing if the agent is dead.
-		while(currentRoundsPerVolley > 0 && this.enabled)
+		while(currentRoundsPerVolley > 0 && this.enabled && !animationScript.isSprinting())
 			{	
 				if(LOSTargetTransform && canCurrentlyFire)
 					{		

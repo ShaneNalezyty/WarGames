@@ -25,13 +25,40 @@ namespace ParagonAI
         {
             myRigidBody = gameObject.GetComponent<Rigidbody>();
         }
-
+		
+		public void ApplyDamage(float damage)
+		{
+			Damage(damage);
+		}
+		
+		public void ApplyDamage(float damage, float force, Vector3 dir)
+		{
+			Damage(damage, force, dir);
+		}
+		
         public void Damage(float damage)
         {
             if (myScript)
             {
                 //Use the multiplier to take differing amounts of damage depending on where the AI is hit
                 damage = damage * damageMultiplyer;
+
+                //Store the amount of damage taken for the dismemberment sript
+                StartCoroutine("StoreDamageTakenRecently", damage);
+
+                if (myScript)
+                    myScript.Damage(damage);
+            }
+        }
+
+        public void Damage(float damage, float force, Vector3 dir)
+        {
+            if (myScript)
+            {
+                //Use the multiplier to take differing amounts of damage depending on where the AI is hit
+                damage = damage * damageMultiplyer;
+
+                StartCoroutine(AddForceVector(force*dir));
 
                 //Store the amount of damage taken for the dismemberment sript
                 StartCoroutine("StoreDamageTakenRecently", damage);
@@ -65,10 +92,13 @@ namespace ParagonAI
         }
 
         //Do I even need this?
-        public void AddForceVector(Vector3 fv)
+        public IEnumerator AddForceVector(Vector3 fv)
         {
+            yield return null;
             if (myRigidBody)
-                myRigidBody.AddForce(fv, ForceMode.Impulse);
+                {
+                    myRigidBody.AddForce(fv, ForceMode.Impulse);
+                }
         }
     }
 }
