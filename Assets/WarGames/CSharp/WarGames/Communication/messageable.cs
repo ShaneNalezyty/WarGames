@@ -5,7 +5,7 @@ namespace WarGames.Communication {
     /// <summary>
     /// Interface to define message objects.
     /// </summary>
-    interface messageable {
+    public interface messageable {
         
     }
 }

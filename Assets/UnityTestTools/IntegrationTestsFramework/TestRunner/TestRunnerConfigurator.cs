@@ -61,7 +61,8 @@ namespace UnityTest
                     }
                     catch (System.Xml.XmlException e)
                     {
-                        if (e.ToString() == "0") {
+                        if (e.ToString() == "") {
+
                         }
                         return null;
                     }
