@@ -8,6 +8,13 @@ namespace WarGames {
     /// </summary>
     /// <seealso cref="WarGames.Communication.GoalMessage" />
     public class Goal {
+        private GoalType goalType;
 
+        public Goal(GoalType type) {
+            goalType = type;
+        }
+        public enum GoalType {
+            ProceedToTarget = 0, Patrol = 1, Attack = 6, Defend = 7
+        }
     }
 }

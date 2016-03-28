@@ -45,10 +45,10 @@ namespace WarGames.Utilities {
         /// <param name="logFlag">The log flag. 
         /// The Flags: B:Behaviours A:Actions, G:Goals, P:Plan, C:Communication Network, K:Knowledge Base, T:Team Info. 
         /// The X flag will always output to the log no matter log flag settings.</param>
-        public void writeToLog(string message, char logFlag) {
+        public void WriteToLog(string message, char logFlag) {
             //If logFlag is enabled then write the message to the log.
-            if (flagIsEnabled( logFlag )){
-                writelineWithTime( message );
+            if (FlagIsEnabled( logFlag )){
+                WritelineWithTime( message );
             }
         }
         /// <summary>
@@ -56,7 +56,7 @@ namespace WarGames.Utilities {
         /// Function concatenates the date and time before the message and a new line character to the end.
         /// </summary>
         /// <param name="message">The log message to write</param>
-        private void writelineWithTime( string message ) {
+        private void WritelineWithTime( string message ) {
             File.AppendAllText( folderFileName, DateTime.Now + ": " + message + "\n");
         }
         /// <summary>
@@ -65,7 +65,7 @@ namespace WarGames.Utilities {
         /// <param name="flag">The flag to check.</param>
         /// <returns>True if flag is enabled. 
         /// False if the flag is disabled.</returns>
-        private bool flagIsEnabled( char flag ) {
+        private bool FlagIsEnabled( char flag ) {
             //The X flag is special. Represents log messages that should always print.
             if (flag.Equals( 'X' ) || flag.Equals( 'x' )) {
                 return true;

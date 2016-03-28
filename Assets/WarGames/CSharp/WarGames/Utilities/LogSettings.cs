@@ -36,14 +36,14 @@ namespace WarGames.Utilities {
         /// Gets the location of the folder to store log files for this instance of WarGames.
         /// </summary>
         /// <returns>Log folder location</returns>
-        public string getLogFolder() {
+        public string GetLogFolder() {
             return logFolder;
         }
         /// <summary>
         /// Gets the log flags.
         /// </summary>
         /// <returns>Enabled log flags</returns>
-        public char[] getLogFlags() {
+        public char[] GetLogFlags() {
             return logFlags;
         }
     }

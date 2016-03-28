@@ -14,7 +14,7 @@ namespace WarGames.Behaviour {
             //Set the behaviour level
             behaveLevel = BehaviourLevel.Idle;
             //Log the initiation of this behaviour
-            soldierScript.writeToLog( "IdlePlanningBehaviour initiated.", 'B' );
+            soldierScript.WriteToLog( "IdlePlanningBehaviour initiated.", 'B' );
         }
 
         public override void AICycle() {

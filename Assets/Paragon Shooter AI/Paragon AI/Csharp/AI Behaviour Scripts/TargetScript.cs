@@ -250,7 +250,7 @@ namespace ParagonAI {
                     }
                 }
 
-                //TODO:  Check after we leave cover, instead of waiting for the next cycle.
+                //RTODO:  Check after we leave cover, instead of waiting for the next cycle.
 
                 yield return new WaitForSeconds(timeBeforeTargetExpiration);
             }

@@ -218,7 +218,7 @@ namespace ParagonAI {
             }
         }
 
-        CustomAIBehaviour currentBehaviour;
+        public CustomAIBehaviour currentBehaviour;
 
         bool canOverrideBehaviour = true;
 
@@ -507,7 +507,7 @@ namespace ParagonAI {
         //Feel free to change the code here to suit your game
         void DealDamage(float damage, float range, Vector3 enemyPos) {
             //Simple distance check
-            //TODO:  Stop agent from doing damage if it's behind a wall
+            //RTODO:  Stop agent from doing damage if it's behind a wall
             if (Vector3.SqrMagnitude(enemyPos - myTransform.position) <= (range * range)) {
                 //The only script we know for sure that will be on our target will be a target script
                 //Don't want to just call ApplyDamage on all scripts because the target script may not be on the same object as the health script

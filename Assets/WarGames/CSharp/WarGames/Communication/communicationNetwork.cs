@@ -33,8 +33,8 @@ namespace WarGames.Communication {
         /// <param name="l">The LeaderLabel representing the team leader.</param>
         /// <param name="m">The Messageable object.</param>
         /// <seealso cref="WarGames.Communication.Messageable" />
-        public void passMessage( LeaderLabel l, Messageable m ) {
-            Queue leadersMessageQueue = getLeaderQueue( l );
+        public void PassMessage( LeaderLabel l, Messageable m ) {
+            Queue leadersMessageQueue = GetLeaderQueue( l );
             leadersMessageQueue.Enqueue( m );
         }
         /// <summary>
@@ -43,8 +43,8 @@ namespace WarGames.Communication {
         /// <param name="s">The Soldier to receive the Messageable object.</param>
         /// <param name="m">The Messageable object.</param>
         /// <seealso cref="WarGames.Communication.Messageable" />
-        public void passMessage( Soldier s, Messageable m ) {
-            Queue soldersQueue = getSoldierQueue( s );
+        public void PassMessage( Soldier s, Messageable m ) {
+            Queue soldersQueue = GetSoldierQueue( s );
             soldersQueue.Enqueue( m );
         }
         /// <summary>
@@ -52,19 +52,19 @@ namespace WarGames.Communication {
         /// Creates a queue to hold Messageable objects for this Soldier.
         /// </summary>
         /// <param name="s">The soldier to add to the CommunicationNetwork</param>
-        public void addSoldier( Soldier s ) {
+        public void AddSoldier( Soldier s ) {
             ArrayList solderObjects = (ArrayList)soldiers[0];
             ArrayList messageQueue = (ArrayList)soldiers[1];
             solderObjects.Add( s );
             messageQueue.Add( new Queue() );
-            s.writeToLog( "Added to the CommunicationNetwork as soldier", 'C' );
+            s.WriteToLog( "Added to the CommunicationNetwork as soldier", 'C' );
         }
         /// <summary>
         /// Adds the TeamLeader to the CommunicationNetwork.
         /// Creates a queue to hold Messageable objects for this TeamLeader
         /// </summary>
         /// <param name="l">The LeaderLabel used to represent the TeamLeader</param>
-        public void addLeader( LeaderLabel l ) {
+        public void AddLeader( LeaderLabel l ) {
             ArrayList leaderLabel = (ArrayList)leaders[0];
             ArrayList messageQueue = (ArrayList)leaders[1];
             leaderLabel.Add( l );
@@ -75,8 +75,8 @@ namespace WarGames.Communication {
         /// </summary>
         /// <param name="s">The Soldier requesting the next Messageable object.</param>
         /// <returns>Soldiers next Messageable object in the Soldier's message queue.</returns>
-        public Messageable getMessage( Soldier s) {
-            Queue solderQueue = getSoldierQueue( s );
+        public Messageable GetMessage( Soldier s) {
+            Queue solderQueue = GetSoldierQueue( s );
             return (Messageable)solderQueue.Dequeue();
         }
         /// <summary>
@@ -84,8 +84,8 @@ namespace WarGames.Communication {
         /// </summary>
         /// <param name="l">The LeaderLabel representing the TeamLeader requesting the next Messageable object.</param>
         /// <returns>TeamLeaders next Messageable object in the TeamLeader's message queue.</returns>
-        public Messageable getMessage( LeaderLabel l ) {
-            Queue leaderQueue = getLeaderQueue( l );
+        public Messageable GetMessage( LeaderLabel l ) {
+            Queue leaderQueue = GetLeaderQueue( l );
             return (Messageable)leaderQueue.Dequeue();
         }
         /// <summary>
@@ -93,7 +93,7 @@ namespace WarGames.Communication {
         /// </summary>
         /// <param name="l">The LeaderLabel representing the TeamLeader.</param>
         /// <returns>The TeamLeader's Messageable queue.</returns>
-        private Queue getLeaderQueue( LeaderLabel l ) {
+        private Queue GetLeaderQueue( LeaderLabel l ) {
             ArrayList leaderLabel = (ArrayList)leaders[0];
             ArrayList messageQueue = (ArrayList)leaders[1];
             int leaderIndex = leaderLabel.IndexOf( l );
@@ -104,7 +104,7 @@ namespace WarGames.Communication {
         /// </summary>
         /// <param name="s">The Soldier</param>
         /// <returns>The Soldier's Messageable queue.</returns>
-        private Queue getSoldierQueue( Soldier s ) {
+        private Queue GetSoldierQueue( Soldier s ) {
             ArrayList solderObjects = (ArrayList)soldiers[0];
             ArrayList messageQueue = (ArrayList)soldiers[1];
             int soldierIndex = solderObjects.IndexOf( s );

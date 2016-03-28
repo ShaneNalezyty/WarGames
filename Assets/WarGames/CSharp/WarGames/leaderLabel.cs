@@ -21,7 +21,7 @@ namespace WarGames {
         /// Gets the leader identifier.
         /// </summary>
         /// <returns>The leader identifier</returns>
-        public int getLeaderID() {
+        public int GetLeaderID() {
             return leaderID;
         }
         /// <summary>
@@ -31,7 +31,7 @@ namespace WarGames {
         /// A <see cref="System.String" /> that represents this TeamLeader's identifier.
         /// </returns>
         override public string ToString() {
-            return getLeaderID().ToString();
+            return GetLeaderID().ToString();
         }
     }
 }

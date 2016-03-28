@@ -13,7 +13,7 @@ namespace WarGames.Behaviour {
             //Set the behaviour level
             behaveLevel = BehaviourLevel.Combat;
             //Log the initiation of this behaviour
-            soldierScript.writeToLog( "CombatPlanningBehaviour initiated.", 'B' );
+            soldierScript.WriteToLog( "CombatPlanningBehaviour initiated.", 'B' );
         }
 
         public override void AICycle() {
