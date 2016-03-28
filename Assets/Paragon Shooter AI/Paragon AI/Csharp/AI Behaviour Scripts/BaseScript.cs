@@ -25,7 +25,7 @@ namespace ParagonAI {
         public NavmeshInterface navI;
         Transform myTransform;
 
-        ParagonAI.TargetScript myTargetScript;
+        public ParagonAI.TargetScript myTargetScript;
 
         //Speed and navigation stuff
         float origAgentStoppingDist = 0.0f;
@@ -369,10 +369,10 @@ namespace ParagonAI {
                     bToReturn = (ParagonAI.CustomAIBehaviour)gameObject.AddComponent(typeof(ParagonAI.Skirmish));
                     break;
                 case AIBehaviour.CombatPlanning:
-                    bToReturn = (ParagonAI.CustomAIBehaviour)gameObject.AddComponent(typeof(WarGames.Behaviour.combatPlanningBehaviour));
+                    bToReturn = (ParagonAI.CustomAIBehaviour)gameObject.AddComponent(typeof(WarGames.Behaviour.CombatPlanningBehaviour));
                     break;
                 case AIBehaviour.IdlePlanning:
-                    bToReturn = (ParagonAI.CustomAIBehaviour)gameObject.AddComponent(typeof(WarGames.Behaviour.idlePlanningBehaviour));
+                    bToReturn = (ParagonAI.CustomAIBehaviour)gameObject.AddComponent(typeof(WarGames.Behaviour.IdlePlanningBehaviour));
                     break;
             }
             bToReturn.Initiate();

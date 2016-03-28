@@ -6,17 +6,8 @@ namespace WarGames {
     /// Contains a desirable gamestate created by a team leader.
     /// Sent to agents using a goalMessage
     /// </summary>
-    /// <seealso cref="WarGames.Communication.goalMessage" />
-    public class goal : MonoBehaviour {
+    /// <seealso cref="WarGames.Communication.GoalMessage" />
+    public class Goal {
 
-        // Use this for initialization
-        void Start() {
-
-        }
-
-        // Update is called once per frame
-        void Update() {
-
-        }
     }
 }

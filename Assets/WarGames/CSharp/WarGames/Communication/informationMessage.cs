@@ -3,19 +3,11 @@ using System.Collections;
 
 namespace WarGames.Communication {
     /// <summary>
-    /// Contains a informationPackage for the reciving teamleader.
+    /// InformationMessage contains an Information Package.
     /// </summary>
-    /// <seealso cref="WarGames.Communication.informationPackage" />
-    public class informationMessage : MonoBehaviour {
+    /// <seealso cref="Messageable" />
+    /// <seealso cref="InformationPackage"/>
+    public class InformationMessage : Messageable {
 
-        // Use this for initialization
-        void Start() {
-
-        }
-
-        // Update is called once per frame
-        void Update() {
-
-        }
     }
 }

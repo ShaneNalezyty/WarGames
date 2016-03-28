@@ -3,9 +3,9 @@ using System.Collections;
 
 namespace WarGames.Communication {
     /// <summary>
-    /// Interface to define message objects.
+    /// Interface for all message objects to be passed over the communication network.
     /// </summary>
-    public interface messageable {
-        
+    public interface Messageable {
+        string ToString();
     }
 }

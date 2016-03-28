@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using WarGames;
 /// <summary>
 /// WarGames is the senior seminar project of Shane Nalezyty.
 /// Contains logic intended to extend Tactical Shooter AI in the Unity Assets Store.
@@ -9,18 +9,16 @@ using System.Collections;
 namespace WarGames {
     /// <summary>
     /// Contains an agents current goal and action plan.
-    /// Contains methods for creating action plans to statisfie provided goals.
+    /// Contains methods for creating action plans to satisfies provided goals.
     /// </summary>
-    public class planner : MonoBehaviour {
-
-        // Use this for initialization
-        void Start() {
-
-        }
-
-        // Update is called once per frame
-        void Update() {
-
-        }
+    public class Planner {
+        /// <summary>
+        /// A Soldier's current Goal.
+        /// </summary>
+        private Goal myGoal;
+        /// <summary>
+        /// A Soldier's current Plan that satisfies the current Goal.
+        /// </summary>
+        private Plan myPlan;
     }
 }

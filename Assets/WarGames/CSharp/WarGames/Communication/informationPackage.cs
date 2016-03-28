@@ -3,18 +3,9 @@ using System.Collections;
 
 namespace WarGames.Communication {
     /// <summary>
-    /// Contains information about the agents gamestate who created it.
+    /// Information about the battle state that a soldier has collected.
     /// </summary>
-    public class informationPackage : MonoBehaviour {
+    public class InformationPackage {
 
-        // Use this for initialization
-        void Start() {
-
-        }
-
-        // Update is called once per frame
-        void Update() {
-
-        }
     }
 }

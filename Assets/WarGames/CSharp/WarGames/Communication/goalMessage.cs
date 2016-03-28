@@ -3,19 +3,10 @@ using System.Collections;
 
 namespace WarGames.Communication {
     /// <summary>
-    /// Contains a goal the reciving agent will attempt to statisfy
+    /// Contains a goal the receiving agent will attempt to satisfy
     /// </summary>
-    /// <seealso cref="WarGames.goal" />
-    public class goalMessage : MonoBehaviour {
+    /// <seealso cref="WarGames.Goal" />
+    public class GoalMessage : Messageable {
 
-        // Use this for initialization
-        void Start() {
-
-        }
-
-        // Update is called once per frame
-        void Update() {
-
-        }
     }
 }

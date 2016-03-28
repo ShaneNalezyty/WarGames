@@ -5,7 +5,7 @@ namespace WarGames {
     /// <summary>
     /// Interface to define an action.
     /// </summary>
-    interface actionable { 
+    interface Actionable { 
 
     }
 }
