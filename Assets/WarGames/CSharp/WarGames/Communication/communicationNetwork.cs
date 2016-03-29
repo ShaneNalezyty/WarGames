@@ -57,7 +57,7 @@ namespace WarGames.Communication {
             ArrayList messageQueue = (ArrayList)soldiers[1];
             solderObjects.Add( s );
             messageQueue.Add( new Queue() );
-            s.WriteToLog( "Added to the CommunicationNetwork as soldier", 'C' );
+            s.WriteToLog( "Added to the CommunicationNetwork as soldier", "C".ToCharArray() );
         }
         /// <summary>
         /// Adds the TeamLeader to the CommunicationNetwork.
@@ -77,7 +77,10 @@ namespace WarGames.Communication {
         /// <returns>Soldiers next Messageable object in the Soldier's message queue.</returns>
         public Messageable GetMessage( Soldier s) {
             Queue solderQueue = GetSoldierQueue( s );
-            return (Messageable)solderQueue.Dequeue();
+            if (solderQueue.Count != 0) {
+                return (Messageable)solderQueue.Dequeue();
+            }
+            return null;
         }
         /// <summary>
         /// Gets the next Messageable object for this TeamLeader.

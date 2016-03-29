@@ -8,6 +8,12 @@ namespace WarGames.Communication {
     /// <seealso cref="Messageable" />
     /// <seealso cref="InformationPackage"/>
     public class InformationMessage : Messageable {
-
+        private InformationPackage informationPackage;
+        public InformationMessage(InformationPackage package) {
+            informationPackage = package;
+        }
+        public InformationPackage GetInformationPackage() {
+            return informationPackage;
+        }
     }
 }

@@ -25,59 +25,87 @@ namespace WarGames {
 
         private BaseScript baseScript;
 
-        private Log logger;
+        private Soldier soldier;
 
         private float CycleTime = 0.2f;
 
-        public Planner( Log log, BaseScript soldiersBaseScript ) {
-            logger = log;
+        public void Start() {
+            soldier = gameObject.GetComponent<Soldier>();
+            baseScript = soldier.GetBaseScript();
             CreatePlan( goal );
-            baseScript = soldiersBaseScript;
             StartCoroutine( "PlanningCoroutine" );
         }
 
+        public void SetGoal(Goal newGoal) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine( "Planner received a new goal: " );
+            stringBuilder.AppendLine( newGoal.ToString() );
+            soldier.WriteToLog( stringBuilder.ToString(), "G".ToCharArray() );
+            goal = newGoal;
+        }
+
         IEnumerator PlanningCoroutine() {
-            if (plan.Satisfies( goal )) {
-
-
-            } else {
+            if (!plan.Satisfies( goal )) {
                 CreatePlan( goal );
             }
             yield return new WaitForSeconds( CycleTime );
         }
 
         private void CreatePlan( Goal goalToSatisfy ) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine( "Planner has began replanning for new goal." );
-            stringBuilder.AppendLine( "Ditched Plan: " );
-            stringBuilder.AppendLine( plan.ToString() );
-            stringBuilder.AppendLine( "Goal new plan should satisfy: " );
-            stringBuilder.AppendLine( goal.ToString() );
-            logger.WriteToLog( stringBuilder.ToString(), 'P' );
+            WritePrePlanningLogInfo();
             //TODO: Create plans
             //If we have no goal we should just wander around till we receive one.
             if (goalToSatisfy == null) {
                 //Create plan with only one WanderAction
-                ArrayList actions = new ArrayList();
-                actions.Add( new WanderAction( baseScript, 20 ) );
-                plan = new Plan( goalToSatisfy, actions );
+                SetPlan( CreateWanderPlan( goalToSatisfy, 20 ) );
+                //ArrayList actions = new ArrayList();
+                //actions.Add( new FindCoverAction( baseScript, 5f, 10f, new Vector3( 0, 0, 0 ) ) );
+                //SetPlan( new Plan( goalToSatisfy, actions ) );
             } else {
 
             }
-            stringBuilder = new StringBuilder();
+            WritePostPlanningLogInfo();
+        }
+
+        private void WritePostPlanningLogInfo() {
+            StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine( "Planner has completed replanning." );
             stringBuilder.AppendLine( "New Plan: " );
-            stringBuilder.AppendLine( plan.ToString() );
-            logger.WriteToLog( stringBuilder.ToString(), 'P' );
+            stringBuilder.Append( plan.ToString() );
+            soldier.WriteToLog( stringBuilder.ToString( 0, stringBuilder.Length - 1 ), "P".ToCharArray() );
         }
 
-        private void LogPlan() {
-            logger.WriteToLog( plan.ToString(), 'P' );
+        private void WritePrePlanningLogInfo() {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine( "Planner has began replanning for new goal." );
+            stringBuilder.AppendLine( "Ditched Plan: " );
+            if (plan != null) {
+                stringBuilder.AppendLine( plan.ToString() );
+            } else {
+                stringBuilder.AppendLine( "Null Plan" );
+            }
+            stringBuilder.AppendLine( "Goal new plan should satisfy: " );
+            if (goal != null) {
+                stringBuilder.AppendLine( goal.ToString() );
+            } else {
+                stringBuilder.AppendLine( "Null Goal" );
+            }
+            soldier.WriteToLog( stringBuilder.ToString( 0, stringBuilder.Length - 1 ), "P".ToCharArray() );
         }
 
-        private void LogGoal() {
-            logger.WriteToLog( goal.ToString(), 'G' );
+        private Plan CreateWanderPlan( Goal goalToSatisfy, int distance ) {
+            ArrayList actions = new ArrayList();
+            actions.Add( new WanderAction( baseScript, distance ) );
+            return new Plan( goalToSatisfy, actions );
         }
-
+        private void SetPlan(Plan p) {
+            if (plan != null) {
+                plan.EndAction();
+            }
+            plan = p;
+        }
+        public Plan GetPlan() {
+            return plan;
+        }
     }
 }

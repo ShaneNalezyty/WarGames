@@ -8,6 +8,7 @@ namespace WarGames {
     /// </summary>
     public interface Actionable {
         void OnComplete();
+        void OnEnd();
         bool NextAICycle( bool inCombat );
         string ToString();
     }

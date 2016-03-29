@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using WarGames.Communication;
 
 namespace WarGames.Behaviour {
     /// <summary>
@@ -14,19 +15,23 @@ namespace WarGames.Behaviour {
             //Set the behaviour level
             behaveLevel = BehaviourLevel.Idle;
             //Log the initiation of this behaviour
-            soldierScript.WriteToLog( "IdlePlanningBehaviour initiated.", 'B' );
+            soldier.WriteToLog( "IdlePlanningBehaviour initiated.", "B".ToCharArray() );
         }
 
         public override void AICycle() {
-
+            soldier.CheckMessages();
+            if (soldier.GetPlan() != null) {
+                soldier.GetPlan().NextAICycle( false );
+            }
         }
-
         public override void EachFrame() {
 
         }
 
         public override void OnEndBehaviour() {
-
+            if (soldier.GetPlan() != null) {
+                soldier.GetPlan().EndAction();
+            }
         }
     }
 }

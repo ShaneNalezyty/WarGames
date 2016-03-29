@@ -24,7 +24,7 @@ namespace WarGames.Utilities {
         /// </summary>
         /// <param name="folderName">Name of the folder to save the log file in.</param>
         /// <param name="agentName">Name of the agent creating this instance.</param>
-        /// <param name="flags">Flags determine what will be recorded in the logs. The Flags: B:Behaviours A:Actions, G:Goals, P:Plan, C:Communication Network, K:Knowledge Base, T:Team Info</param>
+        /// <param name="flags">Flags determine what will be recorded in the logs. The Flags: B:Behaviours A:Actions, G:Goals, P:Plan, C:Communication Network, K:Knowledge Base, T:Team Info, E:Errors</param>
         public Log(string folderName, string agentName, char[] flags) {
             //All flags: BAGPCKT
 
@@ -42,13 +42,16 @@ namespace WarGames.Utilities {
         /// Writes to this agents log. Will only write if the logFlag was enabled on this objects creation.
         /// </summary>
         /// <param name="message">The message to add to this agents log. A time stamp is appended to the front.</param>
-        /// <param name="logFlag">The log flag. 
+        /// <param name="logFlags">The log flags. 
         /// The Flags: B:Behaviours A:Actions, G:Goals, P:Plan, C:Communication Network, K:Knowledge Base, T:Team Info. 
         /// The X flag will always output to the log no matter log flag settings.</param>
-        public void WriteToLog(string message, char logFlag) {
+        public void WriteToLog(string message, char[] logFlags) {
             //If logFlag is enabled then write the message to the log.
-            if (FlagIsEnabled( logFlag )){
-                WritelineWithTime( message );
+            foreach (char logFlag in logFlags) {
+                if (FlagIsEnabled( logFlag )){
+                    WritelineWithTime( message );
+                    return;
+                }
             }
         }
         /// <summary>

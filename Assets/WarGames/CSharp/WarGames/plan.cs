@@ -32,24 +32,37 @@ namespace WarGames {
             GetCurrentAction().OnComplete();
             currentAction++;
         }
+        public void EndAction() {
+            GetCurrentAction().OnEnd();
+        }
         public int GetPercentDone() {
             return (int)(100*(currentAction / actionPlan.Capacity));
         }
         public bool Satisfies( Goal checkGoal ) {
-            return goalToSatisfy.Equals( checkGoal );
+            if (checkGoal != null) {
+                return goalToSatisfy.Equals( checkGoal );
+            } else {
+                if (goalToSatisfy == checkGoal) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         }
         override public string ToString() {
-            StringBuilder stringbuilder = new StringBuilder();
-            stringbuilder.AppendLine( "This plan contains " + actionPlan.Capacity + " actions." );
-            stringbuilder.AppendLine( "This plan is currently " + GetPercentDone() + "% complete." );
-            stringbuilder.AppendLine( "Goal this plan satisfies: " );
-            stringbuilder.AppendLine( goalToSatisfy.ToString() );
-            stringbuilder.AppendLine( "List of actions: " );
-            foreach (Actionable action in actionPlan) {
-                stringbuilder.AppendLine( action.ToString() );
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine( "This plan contains " + actionPlan.Capacity + " actions." );
+            stringBuilder.AppendLine( "This plan is currently " + GetPercentDone() + "% complete." );
+            stringBuilder.AppendLine( "Goal this plan satisfies: " );
+            if (goalToSatisfy != null) {
+                stringBuilder.AppendLine( goalToSatisfy.ToString() );
             }
-            stringbuilder.AppendLine( "End of plan." );
-            return stringbuilder.ToString();
+            stringBuilder.AppendLine( "List of actions: " );
+            foreach (Actionable action in actionPlan) {
+                stringBuilder.Append( action.ToString() );
+            }
+            stringBuilder.AppendLine( "End of plan." );
+            return stringBuilder.ToString( 0, stringBuilder.Length - 1 );
         }
     }
 }

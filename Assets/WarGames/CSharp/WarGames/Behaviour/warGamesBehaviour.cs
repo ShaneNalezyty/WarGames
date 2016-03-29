@@ -14,18 +14,18 @@ namespace WarGames.Behaviour {
         /// The soldierScript holds all variables a soldier needs. 
         /// Team leaders contain a solderScript.
         /// </summary>
-        public Soldier soldierScript;
+        public Soldier soldier;
         /// <summary>
         /// The leaderScript holds all variables a team leader needs.
         /// Only team leaders contain a leader script.
         /// </summary>
-        public TeamLeader leaderScript;
+        public TeamLeader leader;
         public override void Initiate() {
             base.Initiate();
             //Grab the soldier script
-            soldierScript = gameObject.GetComponent<Soldier>();
+            soldier = gameObject.GetComponent<Soldier>();
             //Grab the team leader script. If this is null then this agent is not a team leader.
-            leaderScript = gameObject.GetComponent<TeamLeader>();
+            leader = gameObject.GetComponent<TeamLeader>();
         }
 
         public override void AICycle() {

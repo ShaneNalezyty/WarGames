@@ -16,5 +16,11 @@ namespace WarGames {
         public enum GoalType {
             ProceedToTarget = 0, Patrol = 1, Attack = 6, Defend = 7
         }
+        public GoalType GetGoalType() {
+            return goalType;
+        }
+        public override string ToString() {
+            return base.ToString();
+        }
     }
 }

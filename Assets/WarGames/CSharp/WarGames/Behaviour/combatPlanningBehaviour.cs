@@ -13,11 +13,14 @@ namespace WarGames.Behaviour {
             //Set the behaviour level
             behaveLevel = BehaviourLevel.Combat;
             //Log the initiation of this behaviour
-            soldierScript.WriteToLog( "CombatPlanningBehaviour initiated.", 'B' );
+            soldier.WriteToLog( "CombatPlanningBehaviour initiated.", "B".ToCharArray() );
         }
 
         public override void AICycle() {
-
+            soldier.CheckMessages();
+            if (soldier.GetPlan() != null) {
+                soldier.GetPlan().NextAICycle( true );
+            }
         }
 
         public override void EachFrame() {
@@ -25,7 +28,9 @@ namespace WarGames.Behaviour {
         }
 
         public override void OnEndBehaviour() {
-
+            if (soldier.GetPlan() != null) {
+                soldier.GetPlan().EndAction();
+            }
         }
     }
 }

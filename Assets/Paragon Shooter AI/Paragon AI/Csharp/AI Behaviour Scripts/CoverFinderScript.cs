@@ -235,7 +235,7 @@ namespace ParagonAI {
         }
 
         //Dynamic Cover
-        ParagonAI.CoverData FindDynamicCover(Vector3 targetTransformPos, Transform transformToDefend) {
+        public ParagonAI.CoverData FindDynamicCover(Vector3 targetTransformPos, Transform transformToDefend) {
             if (!useOnlyStaticCover) {
                 //verts = verts = navI.GetNavmeshVertices();
                 verts = navI.GetNavmeshVertices();

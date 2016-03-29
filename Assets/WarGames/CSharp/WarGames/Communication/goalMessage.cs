@@ -7,6 +7,13 @@ namespace WarGames.Communication {
     /// </summary>
     /// <seealso cref="WarGames.Goal" />
     public class GoalMessage : Messageable {
+        private Goal goal;
 
+        public GoalMessage(Goal g) {
+            goal = g;
+        }
+        public Goal GetGoal() {
+            return goal;
+        }
     }
 }
