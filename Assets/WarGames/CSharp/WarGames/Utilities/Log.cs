@@ -22,21 +22,21 @@ namespace WarGames.Utilities {
         /// <summary>
         /// Initializes a new instance of the <see cref="Log"/> class. 
         /// </summary>
-        /// <param name="folderName">Name of the folder to save the log file in.</param>
         /// <param name="agentName">Name of the agent creating this instance.</param>
-        /// <param name="flags">Flags determine what will be recorded in the logs. The Flags: B:Behaviours A:Actions, G:Goals, P:Plan, C:Communication Network, K:Knowledge Base, T:Team Info, E:Errors</param>
-        public Log(string folderName, string agentName, char[] flags) {
+        /// <param name="logSettings">Global settings for every agent to use.</param>
+        /// <seealso cref="WarGames.Utilities.Log" />
+        public Log( LogSettings logSettings, string agentName ) {
             //All flags: BAGPCKT
-
             //Save logFlags for later use.
-            logFlags = flags;
+            logFlags = logSettings.GetLogFlags();
             //Check if the log directory for this program instance has been created yet.
-            if (!Directory.Exists( folderName )) {
+            if ( !Directory.Exists( logSettings.GetLogFolder() ) ) {
                 //If not create it.
-                Directory.CreateDirectory( folderName );
+                Directory.CreateDirectory( logSettings.GetLogFolder() );
             }
             //Append the file name to the end of the folder path.
-            folderFileName = ( folderName + "/" + agentName + ".txt" );
+            folderFileName = ( logSettings.GetLogFolder() + "/" + agentName + ".txt" );
+            
         }
         /// <summary>
         /// Writes to this agents log. Will only write if the logFlag was enabled on this objects creation.
@@ -45,9 +45,10 @@ namespace WarGames.Utilities {
         /// <param name="logFlags">The log flags. 
         /// The Flags: B:Behaviours A:Actions, G:Goals, P:Plan, C:Communication Network, K:Knowledge Base, T:Team Info. 
         /// The X flag will always output to the log no matter log flag settings.</param>
-        public void WriteToLog(string message, char[] logFlags) {
+        public void WriteToLog(string message, string logFlags) {
+            char[] logFlagsArray = logFlags.ToCharArray();
             //If logFlag is enabled then write the message to the log.
-            foreach (char logFlag in logFlags) {
+            foreach (char logFlag in logFlagsArray) {
                 if (FlagIsEnabled( logFlag )){
                     WritelineWithTime( message );
                     return;

@@ -13,13 +13,13 @@ namespace WarGames {
         /// </summary>
         private KnowledgeBase knowledgeBase;
         private Soldier soldier;
-        // Use this for initialization
+
         public void Start() {
             knowledgeBase = new KnowledgeBase();
             soldier = gameObject.GetComponent<Soldier>();
-            WriteToLog( "I have become the leader of team: " + soldier.GetLeaderLabel().ToString(), "T".ToCharArray() );
+            soldier.getCommNetwork().BecomeTeamLeader( soldier );
         }
-        private void WriteToLog( string message, char[] flags ) {
+        private void WriteToLog( string message, string flags ) {
             soldier.WriteToLog( message, flags );
         }
         public override string ToString() {

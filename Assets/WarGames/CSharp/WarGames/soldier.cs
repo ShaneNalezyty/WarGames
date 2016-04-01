@@ -22,54 +22,49 @@ namespace WarGames {
         /// </summary>
         private CommunicationNetwork commNetwork;
         /// <summary>
-        /// Global LogSettings.
-        /// </summary>
-        private LogSettings logSettings;
-        /// <summary>
         /// Soldier's Log script
         /// </summary>
         private Log logger;
         private BaseScript baseScript;
         // Use this for initialization
         public void Start() {
+            //Grab the soldier's BaseScript
+            baseScript = gameObject.GetComponent<ParagonAI.BaseScript>();
+            //Grab the Soldier's TeamID from BaseScript.
+            leaderLabel = new LeaderLabel( baseScript.myTargetScript.myTeamID );
             //If the global CommunicationNetwork is not null
-            if (CommunicationNetwork.currentCommNetwork != null) {
-                //Grab the reference to the CommunicationNetwork
-                commNetwork = CommunicationNetwork.currentCommNetwork;
+            if (CommunicationDistributor.currentCommDistributor != null) {
+                //Grab the reference to the CommunicationNetwork for this team
+                commNetwork = CommunicationDistributor.currentCommDistributor.getCommNetwork( GetLeaderLabel() );
                 //Add this Soldier to the CommunicationNetwork
                 commNetwork.AddSoldier( this );
+                WriteToLog( "I have been added to the communication network for team" + GetLeaderLabel(), "C" );
             }
             //If the global LogSettings are not null
             if (LogSettings.currentLogSettings != null) {
-                //Grab the reference to the LogSettings
-                logSettings = LogSettings.currentLogSettings;
                 //Create this Soldier's Log object based on LogSettings.
-                logger = new Log( logSettings.GetLogFolder(), gameObject.name, logSettings.GetLogFlags() );
+                logger = new Log( LogSettings.currentLogSettings, gameObject.name );
             }
             //Create the Soldier's Planner
-            //Grab the soldier's BaseScript
-            baseScript = gameObject.GetComponent<ParagonAI.BaseScript>();
             gameObject.AddComponent<Planner>();
             planner = gameObject.GetComponent<Planner>();
-            //Grab the Soldier's TeamID from BaseScript.
-            leaderLabel = new LeaderLabel( baseScript.myTargetScript.myTeamID );
             //Write the name of the agent to the log file.
-            WriteToLog( "My agent name is: " + gameObject.name, "X".ToCharArray() );
+            WriteToLog( "My agent name is: " + gameObject.name, "X" );
             //Write the LeaderLabel to the log file.
-            WriteToLog( "My LeaderLabel is: " + leaderLabel.ToString(), "T".ToCharArray() );
+            WriteToLog( "My LeaderLabel is: " + leaderLabel.ToString(), "T" );
         }
         public void CheckMessages() {
             Messageable message = GetMessage();
             if (message != null) {
                 if (message is GoalMessage) {
-                    WriteToLog( "Soldier received a new GoalMessage", "GC".ToCharArray() );
+                    WriteToLog( "Soldier received a new GoalMessage", "GC" );
                     GoalMessage goalMessage = (GoalMessage)message;
                     SetGoal( goalMessage.GetGoal() );
                 } else if (message is InformationMessage) {
                     //Should never happen
-                    WriteToLog( "ERROR: Soldier received a InformationMessage", "EC".ToCharArray() );
+                    WriteToLog( "ERROR: Soldier received a InformationMessage", "EC" );
                 } else if (message is RequestMessage) {
-                    WriteToLog( "Soldier received a new RequestMessage", "GC".ToCharArray() );
+                    WriteToLog( "Soldier received a new RequestMessage", "GC" );
                     InformationPackage informationPackage = new InformationPackage();
                     // TODO: Collect information in package
                     SendMessage( new InformationMessage( informationPackage ) );
@@ -81,7 +76,7 @@ namespace WarGames {
         /// </summary>
         /// <param name="message">The message to write.</param>
         /// <param name="flag">The log level flag.</param>
-        public void WriteToLog( string message, char[] flags ) {
+        public void WriteToLog( string message, string flags ) {
             //If we have a logger
             if (logger != null) {
                 //Write the message to the logger
@@ -96,7 +91,7 @@ namespace WarGames {
             if (commNetwork != null) {
                 commNetwork.PassMessage( leaderLabel, m );
                 //Write the Messageable to the log file.
-                logger.WriteToLog( "Sent messageable: " + m.ToString(), "C".ToCharArray() );
+                WriteToLog( "Sent messageable: " + m.ToString(), "C" );
             }
             
         }
@@ -109,7 +104,7 @@ namespace WarGames {
                 Messageable m = commNetwork.GetMessage( this );
                 //Write the Messageable to the log file.
                 if (m != null) {
-                    logger.WriteToLog( "Got messageable: " + m.ToString(), "C".ToCharArray() );
+                    WriteToLog( "Got messageable: " + m.ToString(), "C" );
                 }
                 return m;
             }
@@ -129,6 +124,9 @@ namespace WarGames {
         }
         public void SetGoal( Goal g ) {
             planner.SetGoal( g );
+        }
+        public CommunicationNetwork getCommNetwork() {
+            return commNetwork;
         }
     }
 }

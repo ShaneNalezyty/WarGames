@@ -50,7 +50,7 @@ namespace ParagonAI {
         [HideInInspector]
         public LayerMask layerMask;
 
-        Vector3[] verts;
+        public Vector3[] verts;
 
         ParagonAI.NavmeshInterface navI;
 

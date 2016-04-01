@@ -5,18 +5,20 @@ using System.Text;
 
 namespace WarGames {
     public class FindCoverAction : Actionable {
-        private float minTime;
-        private float maxTime;
         private BaseScript baseScript;
         private Vector3 defendTarget;
         private bool foundCover = false;
         private bool coroutineRunning = false;
+        private bool lastRanIdle;
+        private bool firstRunOfThisAction = true;
         private Coroutine waitCoroutine;
-        public FindCoverAction( BaseScript soldiersBaseScript, float minTimeToStayInCover, float maxTimeToStayInCover, Vector3 targetPos ) {
-            minTime = minTimeToStayInCover;
-            maxTime = maxTimeToStayInCover;
+        private Soldier soldier;
+        private float TimeToWait;
+        public FindCoverAction( BaseScript soldiersBaseScript, Vector3 targetPos, float waitTime ) {
             baseScript = soldiersBaseScript;
             defendTarget = targetPos;
+            soldier = baseScript.gameObject.GetComponent<Soldier>();
+            TimeToWait = waitTime;
         }
         public void OnComplete() {
         }
@@ -25,88 +27,99 @@ namespace WarGames {
             LeaveCover();
         }
         public bool NextAICycle( bool inCombat ) {
-            if (inCombat) {
+            if ( firstRunOfThisAction ) {
+                baseScript.coverFinderScript.shouldUseDynamicCover = true;
+                soldier.WriteToLog( "I'm starting a FindCoverAction", "A" );
+                firstRunOfThisAction = false;
+            }
+            if ( inCombat ) {
+                if ( lastRanIdle ) {
+                    soldier.WriteToLog( "I've entered combat in a FindCoverAction", "A" );
+                }
+                lastRanIdle = false;
                 //If in combat then run the combat version of this action.
                 return NextCombatAICycle();
             } else {
+                if ( !lastRanIdle ) {
+                    soldier.WriteToLog( "I've left combat in a FindCoverAction", "A" );
+                }
+                lastRanIdle = true;
                 //If not in combat then run the idle version of this action.
                 return NextIdleAICycle();
             }
         }
         private bool NextIdleAICycle() {
-            Soldier soldier = baseScript.gameObject.GetComponent<Soldier>();
-            soldier.WriteToLog( "Started FindCoverAction Idle AICycle", "A".ToCharArray() );
             bool toReturn = false;
-            //if (coverFinderScript) {
-                //baseScript.currentBehaviour.targetVector = baseScript.currentCoverNodePos;
-                //If we have a cover location
-                if (baseScript.currentCoverNodeScript && foundCover) {
-                soldier.WriteToLog( "currentCoverNodeScript or found cover true", "A".ToCharArray() );
-                    //If we can't reach our cover, find a different piece of cover.
-                    if (baseScript.navI.PathPartial()) {
-                        LeaveCover();
-                    }
-                    //Start the countdown to leave cover once we reach it.
-                    if (!baseScript.inCover && baseScript.navI.GetRemainingDistance() <= 0) {
-                        baseScript.inCover = true;
-                        coroutineRunning = true;
-                        waitCoroutine = baseScript.StartCoroutine( SetTimeToLeaveCover( Random.Range( minTime, maxTime ) ) );
-                    }
-                } else {
+            //baseScript.currentBehaviour.targetVector = baseScript.currentCoverNodePos;
+            //If we have a cover location
+            if ( foundCover ) {
+                baseScript.currentBehaviour.targetVector = baseScript.currentCoverNodePos;
+                //If we can't reach our cover, find a different piece of cover.
+                if ( baseScript.navI.PathPartial() ) {
+                    LeaveCover();
+                }
+                //Start the countdown to leave cover once we reach it.
+                ReachCoverAndWait();
+            } else {
                 //If we don't have cover then attempt to find cover.
-                baseScript.coverFinderScript.currentCoverSeekMethod = CoverFinderScript.CoverSeekMethods.RandomCover;
-                baseScript.coverFinderScript.shouldUseDynamicCover = true;
-                    ParagonAI.CoverData coverData = baseScript.coverFinderScript.FindDynamicCover( defendTarget, baseScript.keyTransform );
-                soldier.WriteToLog( coverData.foundCover.ToString(), "A".ToCharArray() );
+                CoverData coverData = baseScript.coverFinderScript.FindDynamicCover( defendTarget, null );
                 //If we succeeded in finding cover then set it.
-                //if (coverData.foundCover) {
-                SetCover( coverData.hidingPosition, coverData.firingPosition, coverData.coverNodeScript );
-                    //}
+                if ( coverData.foundCover ) {
+                    soldier.WriteToLog( "I found dynamic Cover! Position: " + coverData.hidingPosition.ToString(), "A" );
+                    SetCover( coverData.hidingPosition, coverData.firingPosition, coverData.coverNodeScript );
                 }
-                if (!(coroutineRunning) && waitCoroutine != null) {
-                    toReturn = true;
-                }
-            //}
+            }
+            if ( !( coroutineRunning ) && waitCoroutine != null ) {
+                toReturn = true;
+            }
             return toReturn;
         }
         private bool NextCombatAICycle() {
-            Soldier soldier = baseScript.gameObject.GetComponent<Soldier>();
-            soldier.WriteToLog( "Started FindCoverAction Combat AICycle", "A".ToCharArray() );
-            CoverFinderScript coverFinderScript = baseScript.coverFinderScript;
             GunScript gunScript = baseScript.gunScript;
-            //If the CoverFinderScript is enabled then we should find cover from the enemy agent.
-            if (coverFinderScript) {
-                //If we are ( or should be ) firing from cover:
-                if (gunScript.IsFiring() || baseScript.shouldFireFromCover) {
-                    //Set agent to peek over wall
-                    baseScript.currentBehaviour.targetVector = baseScript.currentCoverNodeFiringPos;
-                } else {
-                    //Set agent to hide behind cover
-                    baseScript.currentBehaviour.targetVector = baseScript.currentCoverNodePos;
+            //If we are ( or should be ) firing from cover:
+            if ( gunScript.IsFiring() || baseScript.shouldFireFromCover ) {
+                //Set agent to peek over wall
+                baseScript.currentBehaviour.targetVector = baseScript.currentCoverNodeFiringPos;
+            } else {
+                //Set agent to hide behind cover
+                baseScript.currentBehaviour.targetVector = baseScript.currentCoverNodePos;
+            }
+            if ( foundCover ) {
+                baseScript.currentBehaviour.targetVector = baseScript.currentCoverNodePos;
+                //If we can't reach our cover, find a different piece of cover.
+                if ( baseScript.navI.PathPartial() ) {
+                    LeaveCover();
                 }
-                //If we have a cover location
-                if (baseScript.currentCoverNodeScript || foundCover) {
-                    //If we can't reach our cover, find a different piece of cover.
-                    if (baseScript.navI.PathPartial()) {
-                        LeaveCover();
-                    }
-                    //Start the countdown to leave cover once we reach it.
-                    if (!baseScript.inCover && baseScript.navI.GetRemainingDistance() <= 0) {
-                        baseScript.inCover = true;
-                        coroutineRunning = true;
-                        baseScript.StartCoroutine( SetTimeToLeaveCover( Random.Range( minTime, maxTime ) ) );
-                    }
-                } else {
-                    //If we don't have cover then attempt to find cover.
-                    ParagonAI.CoverData coverData = coverFinderScript.FindDynamicCover( baseScript.targetTransform.position, baseScript.keyTransform );
-                    //If we succeeded in finding cover then set it.
-                    if (coverData.foundCover) {
-                        SetCover( coverData.hidingPosition, coverData.firingPosition, coverData.coverNodeScript );
-                    }
+                //Start the countdown to leave cover once we reach it.
+                ReachCoverAndWait();
+            } else {
+                //If we don't have cover then attempt to find cover.
+                CoverData coverData = baseScript.coverFinderScript.FindDynamicCover( baseScript.targetTransform.position, null );
+                //If we succeeded in finding cover then set it.
+                if ( coverData.foundCover ) {
+                    soldier.WriteToLog( "I found dynamic Cover! Position: " + coverData.hidingPosition.ToString(), "A" );
+                    SetCover( coverData.hidingPosition, coverData.firingPosition, coverData.coverNodeScript );
                 }
             }
             return false;
         }
+
+        private void ReachCoverAndWait() {
+            if ( !baseScript.inCover && baseScript.navI.GetRemainingDistance() <= 0 ) {
+                baseScript.inCover = true;
+                coroutineRunning = true;
+                if ( TimeToWait == float.MaxValue ) {
+                    float timeToStayInCover = Random.Range( baseScript.minTimeInCover, baseScript.maxTimeInCover );
+                    soldier.WriteToLog( "Staying in cover for: " + timeToStayInCover.ToString() + " seconds", "A" );
+                    waitCoroutine = baseScript.StartCoroutine( SetTimeToLeaveCover( timeToStayInCover ) );
+                } else {
+                    soldier.WriteToLog( "Staying in cover for: " + TimeToWait.ToString() + " seconds", "A" );
+                    waitCoroutine = baseScript.StartCoroutine( SetTimeToLeaveCover( TimeToWait ) );
+                }
+                
+            }
+        }
+
         public void LeaveCover() {
             //Because we find dynamic cover we need to be sure to remove the node when we are done with it.
             ParagonAI.ControllerScript.currentController.RemoveACoverSpot( baseScript.currentCoverNodeFiringPos );
@@ -132,19 +145,19 @@ namespace WarGames {
         }
         private IEnumerator SetTimeToLeaveCover( float timeToLeave ) {
             //While the agent should still be in cover
-            while (timeToLeave > 0 && (baseScript.currentCoverNodeScript || foundCover)) {
+            while ( timeToLeave > 0 && ( baseScript.currentCoverNodeScript || foundCover ) ) {
                 //Counts down amount of seconds left in this coroutine.
-                if (baseScript.inCover) {
-                    //If the agent is in cover then remove a quarter of a second from the remaining time.
-                    timeToLeave -= 0.25f;
-                } else {
-                    //If the agent is not in cover then remove a second from the remaining time.
+                if ( baseScript.inCover ) {
+                    //If the agent is in cover then remove a second from the remaining time.
                     timeToLeave--;
+                } else {
+                    //If the agent is not in cover then remove two seconds from the remaining time.
+                    timeToLeave -= 2f;
                 }
                 //If the agent has a target
-                if (baseScript.targetTransform) {
+                if ( baseScript.targetTransform ) {
                     //Makes the agent leave cover if it is no longer safe.  Uses the cover node's built in methods to check.
-                    if (!Physics.Linecast( baseScript.currentCoverNodePos, baseScript.targetTransform.position, baseScript.currentBehaviour.layerMask.value )) {
+                    if ( !Physics.Linecast( baseScript.currentCoverNodePos, baseScript.targetTransform.position, baseScript.currentBehaviour.layerMask.value ) ) {
                         LeaveCover();
                     }
                 }
@@ -152,7 +165,7 @@ namespace WarGames {
                 yield return new WaitForSeconds( 1 );
             }
             //If the amount of time we should be in cover has been met and we are still in cover then leave cover
-            if (baseScript.currentCoverNodeScript || foundCover) {
+            if ( baseScript.currentCoverNodeScript || foundCover ) {
                 LeaveCover();
                 coroutineRunning = false;
             }
@@ -160,8 +173,13 @@ namespace WarGames {
         override public string ToString() {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine( "Find Cover Action:" );
-            stringBuilder.AppendLine( "Min time to stay in cover: " + minTime );
-            stringBuilder.AppendLine( "Max time to stay in cover: " + maxTime );
+            stringBuilder.AppendLine( "Min time to stay in cover: " + baseScript.minTimeInCover );
+            stringBuilder.AppendLine( "Max time to stay in cover: " + baseScript.maxTimeInCover );
+            if ( baseScript.inCover ) {
+                stringBuilder.AppendLine( "Currently in cover" );
+            } else {
+                stringBuilder.AppendLine( "Currently not cover" );
+            }
             return stringBuilder.ToString( 0, stringBuilder.Length - 1 );
         }
     }

@@ -40,7 +40,7 @@ namespace WarGames {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine( "Planner received a new goal: " );
             stringBuilder.AppendLine( newGoal.ToString() );
-            soldier.WriteToLog( stringBuilder.ToString(), "G".ToCharArray() );
+            soldier.WriteToLog( stringBuilder.ToString(), "G" );
             goal = newGoal;
         }
 
@@ -59,7 +59,7 @@ namespace WarGames {
                 //Create plan with only one WanderAction
                 SetPlan( CreateWanderPlan( goalToSatisfy, 20 ) );
                 //ArrayList actions = new ArrayList();
-                //actions.Add( new FindCoverAction( baseScript, 5f, 10f, new Vector3( 0, 0, 0 ) ) );
+                //actions.Add( new FindCoverAction( baseScript, 5f, 10f, new Vector3( -0.2579336f, 0.0000001430511f, 0.000000003576279f ) ) );
                 //SetPlan( new Plan( goalToSatisfy, actions ) );
             } else {
 
@@ -69,15 +69,15 @@ namespace WarGames {
 
         private void WritePostPlanningLogInfo() {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine( "Planner has completed replanning." );
+            stringBuilder.AppendLine( "Planner has completed re-planning." );
             stringBuilder.AppendLine( "New Plan: " );
             stringBuilder.Append( plan.ToString() );
-            soldier.WriteToLog( stringBuilder.ToString( 0, stringBuilder.Length - 1 ), "P".ToCharArray() );
+            soldier.WriteToLog( stringBuilder.ToString( 0, stringBuilder.Length - 1 ), "P" );
         }
 
         private void WritePrePlanningLogInfo() {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine( "Planner has began replanning for new goal." );
+            stringBuilder.AppendLine( "Planner has began re-planning for new goal." );
             stringBuilder.AppendLine( "Ditched Plan: " );
             if (plan != null) {
                 stringBuilder.AppendLine( plan.ToString() );
@@ -90,7 +90,7 @@ namespace WarGames {
             } else {
                 stringBuilder.AppendLine( "Null Goal" );
             }
-            soldier.WriteToLog( stringBuilder.ToString( 0, stringBuilder.Length - 1 ), "P".ToCharArray() );
+            soldier.WriteToLog( stringBuilder.ToString( 0, stringBuilder.Length - 1 ), "P" );
         }
 
         private Plan CreateWanderPlan( Goal goalToSatisfy, int distance ) {

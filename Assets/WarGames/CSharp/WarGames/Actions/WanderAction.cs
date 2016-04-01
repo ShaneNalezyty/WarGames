@@ -9,6 +9,9 @@ namespace WarGames {
         private bool haveWanderPoint;
         private int wanderDistance;
         private FindCoverAction findCoverAction;
+        private bool lastRanIdle;
+        private bool firstRunOfThisAction = true;
+        private Soldier soldier;
         public WanderAction(BaseScript soldiersBaseScript, int distance) {
             baseScript = soldiersBaseScript;
             wanderDistance = distance;
@@ -17,16 +20,31 @@ namespace WarGames {
 
         }
         public void OnEnd() {
-            //Make sure if we ended any cover that we leave it
-            if (findCoverAction != null) {
+            //Make sure if we end that we leave any cover
+            if ( findCoverAction != null) {
                 findCoverAction.LeaveCover();
             }
         }
         public bool NextAICycle( bool inCombat ) {
+            if ( firstRunOfThisAction ) {
+                baseScript.coverFinderScript.shouldUseDynamicCover = true;
+
+                soldier = baseScript.gameObject.GetComponent<Soldier>();
+                soldier.WriteToLog( "I'm starting a WanderAction", "A" );
+                firstRunOfThisAction = false;
+            }
             if (inCombat) {
+                if ( lastRanIdle ) {
+                    soldier.WriteToLog( "I've entered combat in a WanderAction", "A" );
+                }
+                lastRanIdle = false;
                 //If in combat then run the combat version of this action.
                 return NextCombatAICycle();
             } else {
+                if ( !lastRanIdle ) {
+                    soldier.WriteToLog( "I've left combat in a WanderAction", "A" );
+                }
+                lastRanIdle = true;
                 //If not in combat then run the idle version of this action.
                 return NextIdleAICycle();
             }
@@ -53,7 +71,7 @@ namespace WarGames {
             //If we are wandering and enter combat we should go take cover
             if (findCoverAction == null) {
                 //If this agent is entering combat we need to create a findCoverAction
-                findCoverAction = new FindCoverAction( baseScript, 5f, 10f, new Vector3( 0, 0, 0 ) );
+                findCoverAction = new FindCoverAction( baseScript, baseScript.targetTransform.position, float.MaxValue );
             }
             return findCoverAction.NextAICycle( true );
         }

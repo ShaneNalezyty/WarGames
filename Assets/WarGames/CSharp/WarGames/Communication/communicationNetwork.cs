@@ -9,23 +9,12 @@ namespace WarGames.Communication {
     /// <summary>
     /// Provides agents a way to communicate information by sending messageable objects.
     /// </summary>
-    public class CommunicationNetwork : MonoBehaviour {
+    public class CommunicationNetwork {
 
-        /// <summary>
-        /// Pointer to the shared CommunicationNetwork
-        /// </summary>
-        public static WarGames.Communication.CommunicationNetwork currentCommNetwork = null;
+        Hashtable agentQueues;
 
-        /// <summary>
-        /// Index 0 holds the ArrayList of Soldier objects.
-        /// Index 1 holds the ArrayList of Messageable Queue objects.
-        /// </summary>
-        private ArrayList[] soldiers = new ArrayList[2] { new ArrayList(), new ArrayList() };
-        private ArrayList[] leaders = new ArrayList[2] { new ArrayList(), new ArrayList() };
-
-        void Awake() {
-            //Sets this CommunicationNetwork object to run to the shared.
-            currentCommNetwork = this;
+        public CommunicationNetwork() {
+            agentQueues = new Hashtable();
         }
         /// <summary>
         /// Adds a Messageable object to a leader's message queue.
@@ -53,22 +42,17 @@ namespace WarGames.Communication {
         /// </summary>
         /// <param name="s">The soldier to add to the CommunicationNetwork</param>
         public void AddSoldier( Soldier s ) {
-            ArrayList solderObjects = (ArrayList)soldiers[0];
-            ArrayList messageQueue = (ArrayList)soldiers[1];
-            solderObjects.Add( s );
-            messageQueue.Add( new Queue() );
-            s.WriteToLog( "Added to the CommunicationNetwork as soldier", "C".ToCharArray() );
+            agentQueues.Add(s, new Queue());
+            s.WriteToLog( "Added to the CommunicationNetwork as soldier", "C" );
         }
         /// <summary>
         /// Adds the TeamLeader to the CommunicationNetwork.
         /// Creates a queue to hold Messageable objects for this TeamLeader
         /// </summary>
         /// <param name="l">The LeaderLabel used to represent the TeamLeader</param>
-        public void AddLeader( LeaderLabel l ) {
-            ArrayList leaderLabel = (ArrayList)leaders[0];
-            ArrayList messageQueue = (ArrayList)leaders[1];
-            leaderLabel.Add( l );
-            messageQueue.Add( new Queue() );
+        public void BecomeTeamLeader( Soldier s ) {
+            agentQueues.Add( s.GetLeaderLabel(), new Queue());
+            s.WriteToLog( "I have become the leader of team: " + s.GetLeaderLabel(), "T");
         }
         /// <summary>
         /// Gets the next Messageable object for this Soldier.
@@ -97,10 +81,7 @@ namespace WarGames.Communication {
         /// <param name="l">The LeaderLabel representing the TeamLeader.</param>
         /// <returns>The TeamLeader's Messageable queue.</returns>
         private Queue GetLeaderQueue( LeaderLabel l ) {
-            ArrayList leaderLabel = (ArrayList)leaders[0];
-            ArrayList messageQueue = (ArrayList)leaders[1];
-            int leaderIndex = leaderLabel.IndexOf( l );
-            return (Queue)messageQueue[leaderIndex];
+            return (Queue)agentQueues[l];
         }
         /// <summary>
         /// Gets the Soldier's Messageable queue.
@@ -108,10 +89,7 @@ namespace WarGames.Communication {
         /// <param name="s">The Soldier</param>
         /// <returns>The Soldier's Messageable queue.</returns>
         private Queue GetSoldierQueue( Soldier s ) {
-            ArrayList solderObjects = (ArrayList)soldiers[0];
-            ArrayList messageQueue = (ArrayList)soldiers[1];
-            int soldierIndex = solderObjects.IndexOf( s );
-            return (Queue)messageQueue[soldierIndex];
+            return (Queue)agentQueues[s];
         }
     }
 }
