@@ -3,17 +3,17 @@ using System.Collections;
 using System.Text;
 
 namespace WarGames {
-    /// <summary>
-    /// Contains a set of actions that when executed sequentially satisfies a goal.
-    /// </summary>
-    /// <seealso cref="WarGames.Goal" />
-    public class Plan {
+	/// <summary>
+	/// Contains a set of actions that when executed sequentially satisfies a goal.
+	/// </summary>
+	/// <seealso cref="WarGames.Goal" />
+	[System.Serializable]
+	public class Plan {
         private Goal goalToSatisfy;
-        private ArrayList actionPlan;
+        private Actionable[] actionPlan;
         private int currentAction;
-        public Plan( Goal goal, ArrayList actions ) {
+        public Plan( Goal goal, Actionable[] actions ) {
             actionPlan = actions;
-            actionPlan.TrimToSize();
             goalToSatisfy = goal;
             currentAction = 0;
         }
@@ -25,18 +25,21 @@ namespace WarGames {
             }
         }
         private Actionable GetCurrentAction() {
-            return (Actionable)actionPlan[currentAction];
+            return actionPlan[currentAction];
         }
 
         private void CompleteAction() {
             GetCurrentAction().OnComplete();
             currentAction++;
+			if ( actionPlan.Length < currentAction ) {
+				currentAction--;
+			}
         }
         public void EndAction() {
             GetCurrentAction().OnEnd();
         }
         public int GetPercentDone() {
-            return (int)(100*(currentAction / actionPlan.Capacity));
+			return (int)( 100 * ( currentAction / actionPlan.Length ) );
         }
         public bool Satisfies( Goal checkGoal ) {
             if (checkGoal != null) {
@@ -51,7 +54,7 @@ namespace WarGames {
         }
         override public string ToString() {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine( "This plan contains " + actionPlan.Capacity + " actions." );
+            stringBuilder.AppendLine( "This plan contains " + actionPlan.Length + " actions." );
             stringBuilder.AppendLine( "This plan is currently " + GetPercentDone() + "% complete." );
             stringBuilder.AppendLine( "Goal this plan satisfies: " );
             if (goalToSatisfy != null) {

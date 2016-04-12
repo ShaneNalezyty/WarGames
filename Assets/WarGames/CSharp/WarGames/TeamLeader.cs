@@ -17,7 +17,7 @@ namespace WarGames {
         public void Start() {
             knowledgeBase = new KnowledgeBase();
             soldier = gameObject.GetComponent<Soldier>();
-            soldier.getCommNetwork().BecomeTeamLeader( soldier );
+            soldier.GetCommNetwork().BecomeTeamLeader( soldier );
         }
         private void WriteToLog( string message, string flags ) {
             soldier.WriteToLog( message, flags );

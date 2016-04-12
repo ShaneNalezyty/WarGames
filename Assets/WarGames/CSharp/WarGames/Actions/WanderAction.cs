@@ -71,7 +71,7 @@ namespace WarGames {
             //If we are wandering and enter combat we should go take cover
             if (findCoverAction == null) {
                 //If this agent is entering combat we need to create a findCoverAction
-                findCoverAction = new FindCoverAction( baseScript, baseScript.targetTransform.position, float.MaxValue );
+                findCoverAction = new FindCoverAction( baseScript, baseScript.targetTransform.position, float.MaxValue, Vector3.zero );
             }
             return findCoverAction.NextAICycle( true );
         }

@@ -12,14 +12,12 @@ namespace WarGames {
         private bool firstRunOfThisAction = true;
         private FindCoverAction findCoverAction;
         private Vector3 target;
-        private NavmeshInterface navI;
         private float watchTime;
 
         public DefendAction( BaseScript soldiersBaseScript, Vector3 targetAreaToWatch, float timeToWatch ) {
             baseScript = soldiersBaseScript;
             target = targetAreaToWatch;
             soldier = baseScript.gameObject.GetComponent<Soldier>();
-            navI = baseScript.navI;
             watchTime = timeToWatch;
         }
 
@@ -33,6 +31,7 @@ namespace WarGames {
             if ( inCombat ) {
                 if ( lastRanIdle ) {
                     soldier.WriteToLog( "I've entered combat in a DefendAction", "A" );
+					findCoverAction = null;
                 }
                 lastRanIdle = false;
                 //If in combat then run the combat version of this action.
@@ -40,6 +39,7 @@ namespace WarGames {
             } else {
                 if ( !lastRanIdle ) {
                     soldier.WriteToLog( "I've left combat in a DefendAction", "A" );
+					findCoverAction = null;
                 }
                 lastRanIdle = true;
                 //If not in combat then run the idle version of this action.
@@ -48,14 +48,19 @@ namespace WarGames {
         }
 
         private bool NextIdleAICycle() {
-            throw new NotImplementedException();
-        }
+			baseScript.SetSpeed( baseScript.alertSpeed );
+			//Find a cover location that looks at the target position
+			if ( findCoverAction == null ) {
+				findCoverAction = new FindCoverAction( baseScript, target, watchTime, Vector3.zero );
+			}
+			return findCoverAction.NextAICycle( true );
+		}
 
         private bool NextCombatAICycle() {
             //If we enter combat we need to adjust our cover to be relevant to our target
             if ( findCoverAction == null ) {
                 //If this agent is entering combat we need to create a findCoverAction
-                findCoverAction = new FindCoverAction( baseScript, baseScript.targetTransform.position, float.MaxValue );
+                findCoverAction = new FindCoverAction( baseScript, baseScript.targetTransform.position, watchTime, target );
             }
             return findCoverAction.NextAICycle( true );
         }

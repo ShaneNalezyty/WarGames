@@ -61,7 +61,7 @@ namespace WarGames.Utilities {
         /// </summary>
         /// <param name="message">The log message to write</param>
         private void WritelineWithTime( string message ) {
-            File.AppendAllText( folderFileName, DateTime.Now + ": " + message + "\n");
+            File.AppendAllText( folderFileName, DateTime.Now.ToString() + ": " + message + "\n");
         }
         /// <summary>
         /// Checks if the flag is enabled for logging.

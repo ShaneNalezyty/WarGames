@@ -2,6 +2,8 @@
 using WarGames.Communication;
 using WarGames.Utilities;
 using ParagonAI;
+using System.Text;
+using System.Collections.Generic;
 
 namespace WarGames {
     /// <summary>
@@ -26,6 +28,8 @@ namespace WarGames {
         /// </summary>
         private Log logger;
         private BaseScript baseScript;
+        private Goal currentGoal;
+		private WarGamesFindCoverScript findCoverScript;
         // Use this for initialization
         public void Start() {
             //Grab the soldier's BaseScript
@@ -48,6 +52,8 @@ namespace WarGames {
             //Create the Soldier's Planner
             gameObject.AddComponent<Planner>();
             planner = gameObject.GetComponent<Planner>();
+			//gameObject.AddComponent<WarGamesFindCoverScript>();
+			//findCoverScript = gameObject.GetComponent<WarGamesFindCoverScript>();
             //Write the name of the agent to the log file.
             WriteToLog( "My agent name is: " + gameObject.name, "X" );
             //Write the LeaderLabel to the log file.
@@ -65,7 +71,7 @@ namespace WarGames {
                     WriteToLog( "ERROR: Soldier received a InformationMessage", "EC" );
                 } else if (message is RequestMessage) {
                     WriteToLog( "Soldier received a new RequestMessage", "GC" );
-                    InformationPackage informationPackage = new InformationPackage();
+					InformationPackage informationPackage = BuildInformationPackage();
                     // TODO: Collect information in package
                     SendMessage( new InformationMessage( informationPackage ) );
                 }
@@ -110,6 +116,20 @@ namespace WarGames {
             }
             return null;
         }
+		public InformationPackage BuildInformationPackage() {
+			AgentStatusUpdate agentUpdate = new AgentStatusUpdate( this );
+			List<Target> currentVisibleTargets = baseScript.myTargetScript.getAllVisibleTargets();
+			List<EnemyStatusUpdate> enemyUpdates = new List<EnemyStatusUpdate>();
+			foreach ( Target target in currentVisibleTargets ) {
+				if ( target.Equals( baseScript.targetTransform ) ) {
+					enemyUpdates.Add( new EnemyStatusUpdate( 'E', target.transform.position ) );
+				} else {
+					enemyUpdates.Add( new EnemyStatusUpdate( 'N', target.transform.position ) );
+				}
+			}
+			InformationPackage toReturn = new InformationPackage( agentUpdate, enemyUpdates.ToArray() );
+			return toReturn;
+		}
         public BaseScript GetBaseScript() {
             return baseScript;
         }
@@ -122,11 +142,17 @@ namespace WarGames {
             }
             return null;
         }
+		public Goal GetGoal() {
+            return currentGoal;
+		}
         public void SetGoal( Goal g ) {
             planner.SetGoal( g );
         }
-        public CommunicationNetwork getCommNetwork() {
+        public CommunicationNetwork GetCommNetwork() {
             return commNetwork;
         }
+		public WarGamesFindCoverScript GetFindCoverScript() {
+			return findCoverScript;
+		}
     }
 }

@@ -61,9 +61,6 @@ namespace UnityTest
                     }
                     catch (System.Xml.XmlException e)
                     {
-                        if (e.ToString() == "") {
-
-                        }
                         return null;
                     }
                 }

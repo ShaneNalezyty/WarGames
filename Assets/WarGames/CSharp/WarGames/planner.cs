@@ -94,8 +94,8 @@ namespace WarGames {
         }
 
         private Plan CreateWanderPlan( Goal goalToSatisfy, int distance ) {
-            ArrayList actions = new ArrayList();
-            actions.Add( new WanderAction( baseScript, distance ) );
+			Actionable[] actions = new Actionable[1];
+			actions[0] = new WanderAction( baseScript, distance );
             return new Plan( goalToSatisfy, actions );
         }
         private void SetPlan(Plan p) {
@@ -107,5 +107,8 @@ namespace WarGames {
         public Plan GetPlan() {
             return plan;
         }
+		public Goal GetGoal() {
+			return goal;
+		}
     }
 }

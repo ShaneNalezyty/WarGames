@@ -331,9 +331,9 @@ namespace ParagonAI {
                 }
 
                 //If all of the above fails, pick a random target- even if it's one we haven't seen
-                if (currentEnemyTarget == null && enemyTargets.Length > 0) {
-                    currentEnemyTarget = enemyTargets[Random.Range(0, enemyTargets.Length - 1)];
-                }
+                //if (currentEnemyTarget == null && enemyTargets.Length > 0) {
+                //    currentEnemyTarget = enemyTargets[Random.Range(0, enemyTargets.Length - 1)];
+                //}
 
                 if (currentEnemyTarget != null) {
                     myAIBaseScript.SetMyTarget(currentEnemyTarget.transform, currentEnemyTarget.targetScript.myLOSTarget);
@@ -431,6 +431,8 @@ namespace ParagonAI {
         public void ApplyDamage(float h) {
             healthScriptHolder.SendMessage("Damage", h, SendMessageOptions.DontRequireReceiver);
         }
-
+		public List<ParagonAI.Target> getAllVisibleTargets() {
+			return listOfCurrentlyNoticedTargets;
+		}
     }
 }

@@ -10,8 +10,20 @@ namespace WarGames {
         private Soldier soldier;
         private bool lastRanIdle;
         private bool firstRunOfThisAction = true;
+		private FindCoverAction findCoverAction;
+		private Vector3 target;
+		private NavmeshInterface navI;
+		private float totalDistance;
 
-        public bool NextAICycle( bool inCombat ) {
+		public AttackAction( BaseScript soldiersBaseScript, Vector3 targetAreaToAttack ) {
+			baseScript = soldiersBaseScript;
+			target = targetAreaToAttack;
+			soldier = baseScript.gameObject.GetComponent<Soldier>();
+			navI = baseScript.navI;
+			totalDistance = Vector3.Distance( baseScript.gameObject.transform.position, targetAreaToAttack );
+		}
+
+		public bool NextAICycle( bool inCombat ) {
             if ( firstRunOfThisAction ) {
                 baseScript.coverFinderScript.shouldUseDynamicCover = true;
                 soldier = baseScript.gameObject.GetComponent<Soldier>();
@@ -36,12 +48,24 @@ namespace WarGames {
         }
 
         private bool NextIdleAICycle() {
-            throw new NotImplementedException();
-        }
+			findCoverAction = null;
+			baseScript.SetSpeed( baseScript.runSpeed );
+			baseScript.currentBehaviour.targetVector = baseScript.keyTransform.position;
+			if ( !navI.PathPending() && navI.GetRemainingDistance() < ( totalDistance / 10 ) ) {
+				//If we have reached at least 90% to the location then this action is over
+				return true;
+			}
+			return false;
+		}
 
         private bool NextCombatAICycle() {
-            throw new NotImplementedException();
-        }
+			//If we enter combat we need to adjust our cover to be relevant to our target
+			if ( findCoverAction == null ) {
+				//If this agent is entering combat we need to create a findCoverAction
+				findCoverAction = new FindCoverAction( baseScript, baseScript.targetTransform.position, float.MaxValue, target );
+			}
+			return findCoverAction.NextAICycle( true );
+		}
 
         public void OnComplete() {
 
