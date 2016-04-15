@@ -12,25 +12,34 @@ namespace WarGames {
 		private bool coroutineRunning = false;
 		private Coroutine waitCoroutine;
 		private Soldier soldier;
-		private float timeToWait;
+		private List<CoverData> prevCover = new List<CoverData>();
 
 		public void Awake() {
 			baseScript = gameObject.GetComponent<BaseScript>();
+			soldier = gameObject.GetComponent<Soldier>();
+		}
+		public bool IsCoverCoroutineRunning() {
+			return coroutineRunning;
 		}
 
-		private void ReachCoverAndWait() {
+		private bool CoverToCloseToOldCover( CoverData old, CoverData newCD ) {
+			float dist = Vector3.SqrMagnitude( old.hidingPosition - newCD.hidingPosition );
+			soldier.WriteToLog( "distance: " + dist, "A" );
+			return dist < 100;
+		}
+		
+		public void ReachCoverAndWait( CoverData coverData, Goal goal, bool holdingPosision ) {
+			float[] coverWaitRange;
+			if (holdingPosision) {
+				coverWaitRange = new float[] { float.MaxValue, float.MaxValue };
+			} else {
+				coverWaitRange = goal.GetWaitRange();
+			}
 			if (!baseScript.inCover && baseScript.navI.GetRemainingDistance() <= 0) {
 				baseScript.inCover = true;
 				coroutineRunning = true;
-				if (timeToWait == float.MaxValue) {
-					float timeToStayInCover = UnityEngine.Random.Range( baseScript.minTimeInCover, baseScript.maxTimeInCover );
-					soldier.WriteToLog( "Staying in cover for: " + timeToStayInCover.ToString() + " seconds", "A" );
-					waitCoroutine = baseScript.StartCoroutine( SetTimeToLeaveCover( timeToStayInCover ) );
-				} else {
-					soldier.WriteToLog( "Staying in cover for: " + timeToWait.ToString() + " seconds", "A" );
-					waitCoroutine = baseScript.StartCoroutine( SetTimeToLeaveCover( timeToWait ) );
-				}
-
+				//waitCoroutine = StartCoroutine( SetTimeToLeaveCover(UnityEngine.Random.Range( coverWaitRange[0], coverWaitRange[1] ) ) );
+				waitCoroutine = StartCoroutine( SetTimeToLeaveCover( 3f ) );
 			}
 		}
 
@@ -42,9 +51,10 @@ namespace WarGames {
 			baseScript.SetOrigStoppingDistance();
 			//Reset foundCover so we look for new cover if needed.
 			foundCover = false;
-
-			//Resets some variables the CoverFinderScript uses
-			baseScript.coverFinderScript.ResetLastCoverPos();
+			if (coroutineRunning) {
+				StopAllCoroutines();
+				coroutineRunning = false;
+			}
 		}
 		public void SetCover( Vector3 newCoverPos, Vector3 newCoverFiringSpot ) {
 			//Updates the agents BaseScript to contain the currentCover location data
@@ -72,6 +82,7 @@ namespace WarGames {
 				if (baseScript.targetTransform) {
 					//Makes the agent leave cover if it is no longer safe.  Uses the cover node's built in methods to check.
 					if (!Physics.Linecast( baseScript.currentCoverNodePos, baseScript.targetTransform.position, baseScript.currentBehaviour.layerMask.value )) {
+						timeToLeave = 0f;
 						LeaveCover();
 					}
 				}
@@ -81,11 +92,42 @@ namespace WarGames {
 			//If the amount of time we should be in cover has been met and we are still in cover then leave cover
 			if (baseScript.inCover || foundCover) {
 				LeaveCover();
-				coroutineRunning = false;
+				soldier.WriteToLog( "Should end sdfsdsdfsdffs", "A" );
 			}
 		}
 
+		public float GetPercentToGoalDist( Vector3 startPosition, Vector3 goalPosition ) {
+			float totalDist = Vector3.SqrMagnitude( startPosition - goalPosition );
+			float currentDist = Vector3.SqrMagnitude( transform.position - goalPosition );
+			return currentDist / totalDist;
+		}
+
+		public char[] DirectionTowards( Vector3 startPosition, Vector3 goalPosition ) {
+			char[] direction = new char[2];
+			int distanceBetweenX = Mathf.Abs( (int)(startPosition.x - goalPosition.x) );
+			int distanceBetweenZ = Mathf.Abs( (int)(startPosition.z - goalPosition.z) );
+			if (distanceBetweenX >= distanceBetweenZ) {
+				if (startPosition.x > goalPosition.x) {
+					direction[0] = 'x';
+					direction[1] = 'l';
+				} else {
+					direction[0] = 'x';
+					direction[1] = 'h';
+				}
+			} else {
+				if (startPosition.z > goalPosition.z) {
+					direction[0] = 'z';
+					direction[1] = 'l';
+				} else {
+					direction[0] = 'z';
+					direction[1] = 'h';
+				}
+			}
+			return direction;
+		}
+
 		public CoverData FindCover( Vector3 targetVector, Goal goal, bool useFirstCover, bool holdingPosition, char[] direction, float percentToGoal ) {
+			soldier.WriteToLog( "percent to goal: " + percentToGoal, "A" );
 			//If we are not engaging a target and are aggression is VeryHigh don't even look for cover
 			if (baseScript.IsEnaging() && goal.GetAggressionLevel() == Goal.AggressionLevel.VeryHigh) {
 				return new CoverData();
@@ -113,19 +155,29 @@ namespace WarGames {
 			List<CoverData> possibleCoverNodes = new List<CoverData>();
 
 			//To make sure we don't use a location right next to our current location
-			int minDistanceBetweenLastCover = 3;
-
+			int minDistanceBetweenLastCover = 20;
+			soldier.WriteToLog( "Possible verts: " + verts.Length, "A" );
 			for (int i = 0; i < verts.Length; i++) {
 				//If the possible location is farther then the set minimum space to travel before the agents last cover location
 				if (Vector3.SqrMagnitude( verts[i] - agentPosition ) > minDistanceBetweenLastCover) {
 					//Get the current distance between the agent and this cover
-					float distBetweenAgentAndCover = Vector3.SqrMagnitude( verts[i] - targetVector );
+					//float distBetweenAgentAndCover = Vector3.SqrMagnitude( verts[i] - targetVector );
 					//Check that we can hide and fire at current location, check that no other agent is in this location, and check this location is on the proper side of map.
-					if (CheckLocationBounds( verts[i], targetVector, layerMask, fireOffset, hideOffset, maxDist ) && CheckProperSide( verts[i], targetVector, direction )) {
+					bool goodCover;
+					if (!baseScript.IsEnaging()) {
+						goodCover = !CheckProperSide( verts[i], targetVector, direction );
+					} else {
+						goodCover = CheckLocationBounds( verts[i], targetVector, layerMask, fireOffset, hideOffset, maxDist ) && CheckProperSide( verts[i], targetVector, direction );
+					}
+					//if (CheckLocationBounds( verts[i], targetVector, layerMask, fireOffset, hideOffset, maxDist ) && CheckProperSide( verts[i], targetVector, direction )) {
+					if (goodCover) {
 						//Used to skip side stepping cover check if the agent can crouch fire at the cover location
 						bool shouldContinue = true;
 						Vector3 hidingPosCheckingNow = verts[i];
 
+						if (!baseScript.IsEnaging()) {
+							possibleCoverNodes.Add( new CoverData( true, hidingPosCheckingNow, verts[i], true, null ) );
+						}
 						//Check to make sure we have clear LoS between the firing position and the move position.
 						if (!Physics.Linecast( targetVector, verts[i], layerMask ) && Physics.Linecast( hidingPosCheckingNow, targetVector, layerMask )) {
 							possibleCoverNodes.Add( new CoverData( true, hidingPosCheckingNow, verts[i], true, null ) );
@@ -151,12 +203,23 @@ namespace WarGames {
 					}
 				}
 			}
-			CoverData toReturn = new CoverData();
+			foreach (CoverData oldCover in prevCover) {
+				foreach (CoverData possibleCover in possibleCoverNodes) {
+					if (possibleCover.Equals( oldCover )) {
+						possibleCoverNodes.Remove( possibleCover );
+					} else if( CoverToCloseToOldCover(oldCover, possibleCover) ) {
+						possibleCoverNodes.Remove( possibleCover );
+					}
+				}
+			}
+				CoverData toReturn = new CoverData();
 			//Once all possible locations have been found pick the best
 			if (possibleCoverNodes.Count == 0) {
+				soldier.WriteToLog( "No Cover Found!", "A" );
 				//If we didn't find any good cover return a CoverNode indicating that
 				return toReturn;
 			} else if (possibleCoverNodes.Count == 1) {
+				soldier.WriteToLog( "Only one cover found!", "A" );
 				//If we only have one location use that
 				toReturn = possibleCoverNodes[0];
 			} else {
@@ -164,11 +227,13 @@ namespace WarGames {
 				//If we are attempting to hold a position then just use the closest cover
 				CoverData closestCover = GetClosestCover( possibleCoverNodes );
 				if (holdingPosition) {
+					soldier.WriteToLog( "Using Closest Cover!", "A" );
 					return closestCover;
 				}
 				CoverData closestCoverTowardGoal = GetClosestCoverTowardGoal( possibleCoverNodes, goal.GetDestination() );
 				CoverData secondClosestCoverTowardGoal = GetSecondClosestCoverTowardGoal( possibleCoverNodes, goal.GetDestination() );
 				if (baseScript.IsEnaging()) {
+					soldier.WriteToLog( "getting in combat cover ", "A" );
 					//If we are in combat use the cover closest to us
 					switch (goal.GetAggressionLevel()) {
 					case Goal.AggressionLevel.VeryLow:
@@ -188,6 +253,7 @@ namespace WarGames {
 						break;
 					}
 				} else {
+					soldier.WriteToLog( "getting out of combat cover ", "A" );
 					//VeryLow = 0, Low = 1, Moderate = 2, High = 3, VeryHigh = 4
 					//If we are not in combat select cover based on aggression level
 					switch (goal.GetAggressionLevel()) {
@@ -195,7 +261,7 @@ namespace WarGames {
 						toReturn = closestCoverTowardGoal;
 						break;
 					case Goal.AggressionLevel.Low:
-						if (percentToGoal < .5f) {
+						if (percentToGoal > .5f) {
 							toReturn = secondClosestCoverTowardGoal;
 							break;
 						} else {
@@ -203,9 +269,9 @@ namespace WarGames {
 							break;
 						}
 					case Goal.AggressionLevel.Moderate:
-						if (percentToGoal < .5f) {
+						if (percentToGoal > .5f) {
 							break;
-						} else if (percentToGoal < .75f) {
+						} else if (percentToGoal > .25f) {
 							toReturn = secondClosestCoverTowardGoal;
 							break;
 						} else {
@@ -213,7 +279,7 @@ namespace WarGames {
 							break;
 						}
 					case Goal.AggressionLevel.High:
-						if (percentToGoal < .75f) {
+						if (percentToGoal > .25f) {
 							break;
 						} else {
 							toReturn = secondClosestCoverTowardGoal;

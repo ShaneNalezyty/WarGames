@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Text;
+using WarGames.Communication;
 
 namespace WarGames {
     /// <summary>
@@ -19,7 +20,32 @@ namespace WarGames {
             soldier = gameObject.GetComponent<Soldier>();
             soldier.GetCommNetwork().BecomeTeamLeader( soldier );
         }
-        private void WriteToLog( string message, string flags ) {
+
+		public void CheckMessages() {
+			Messageable message = GetMessage();
+			if (message != null) {
+				if (message is GoalMessage) {
+				} else if (message is InformationMessage) {
+					InformationMessage msg = (InformationMessage)message;
+					knowledgeBase.UpdateFoundEnemies( msg.InformationPackage.GetEnemyUpdates() );
+					knowledgeBase.UpdateSoldier( msg.InformationPackage.GetAgentUpdates() );
+				} else if (message is RequestMessage) {
+				}
+			}
+		}
+		public Messageable GetMessage() {
+			if (soldier.GetCommNetwork() != null) {
+				Messageable m = soldier.GetCommNetwork().GetMessage( soldier.GetLeaderLabel() );
+				//Write the Messageable to the log file.
+				if (m != null) {
+					WriteToLog( "Got messageable: " + m.ToString(), "C" );
+				}
+				return m;
+			}
+			return null;
+		}
+
+		private void WriteToLog( string message, string flags ) {
             soldier.WriteToLog( message, flags );
         }
         public override string ToString() {

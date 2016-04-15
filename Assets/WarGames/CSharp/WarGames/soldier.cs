@@ -16,10 +16,6 @@ namespace WarGames {
         /// </summary>
         private LeaderLabel leaderLabel;
         /// <summary>
-        /// Soldier's PlannerScript
-        /// </summary>
-        private Planner planner;
-        /// <summary>
         /// Soldier's CommunicationNetwork.
         /// </summary>
         private CommunicationNetwork commNetwork;
@@ -49,15 +45,13 @@ namespace WarGames {
                 //Create this Soldier's Log object based on LogSettings.
                 logger = new Log( LogSettings.currentLogSettings, gameObject.name );
             }
-            //Create the Soldier's Planner
-            gameObject.AddComponent<Planner>();
-            planner = gameObject.GetComponent<Planner>();
-			//gameObject.AddComponent<WarGamesFindCoverScript>();
-			//findCoverScript = gameObject.GetComponent<WarGamesFindCoverScript>();
+			gameObject.AddComponent<WarGamesFindCoverScript>();
+			findCoverScript = gameObject.GetComponent<WarGamesFindCoverScript>();
             //Write the name of the agent to the log file.
             WriteToLog( "My agent name is: " + gameObject.name, "X" );
             //Write the LeaderLabel to the log file.
             WriteToLog( "My LeaderLabel is: " + leaderLabel.ToString(), "T" );
+			SetGoal( new Goal( Goal.AggressionLevel.High, new Vector3( 3.5f, 0, -73.1f ) ) );
         }
         public void CheckMessages() {
             Messageable message = GetMessage();
@@ -121,10 +115,10 @@ namespace WarGames {
 			List<Target> currentVisibleTargets = baseScript.myTargetScript.getAllVisibleTargets();
 			List<EnemyStatusUpdate> enemyUpdates = new List<EnemyStatusUpdate>();
 			foreach ( Target target in currentVisibleTargets ) {
-				if ( target.Equals( baseScript.targetTransform ) ) {
-					enemyUpdates.Add( new EnemyStatusUpdate( 'E', target.transform.position ) );
+				if ( target.transform.Equals( baseScript.targetTransform ) ) {
+					enemyUpdates.Add( new EnemyStatusUpdate( true, target.transform.position, this ) );
 				} else {
-					enemyUpdates.Add( new EnemyStatusUpdate( 'N', target.transform.position ) );
+					enemyUpdates.Add( new EnemyStatusUpdate( false, target.transform.position, this ) );
 				}
 			}
 			InformationPackage toReturn = new InformationPackage( agentUpdate, enemyUpdates.ToArray() );
@@ -136,17 +130,11 @@ namespace WarGames {
         public LeaderLabel GetLeaderLabel() {
             return leaderLabel;
         }
-        public Plan GetPlan() {
-            if (planner != null) {
-                return planner.GetPlan();
-            }
-            return null;
-        }
 		public Goal GetGoal() {
             return currentGoal;
 		}
         public void SetGoal( Goal g ) {
-            planner.SetGoal( g );
+            currentGoal = g;
         }
         public CommunicationNetwork GetCommNetwork() {
             return commNetwork;

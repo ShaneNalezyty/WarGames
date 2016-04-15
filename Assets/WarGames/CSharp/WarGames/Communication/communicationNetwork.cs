@@ -91,5 +91,9 @@ namespace WarGames.Communication {
         private Queue GetSoldierQueue( Soldier s ) {
             return (Queue)agentQueues[s];
         }
+
+		public ICollection GetSoldiers() {
+			return agentQueues.Keys;
+		}
     }
 }

@@ -1,35 +1,42 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Text;
+using System;
 
 namespace WarGames.Communication {
 	public class EnemyStatusUpdate {
 		//Location we saw the enemy agent at.
 		private Vector3 targetVector;
-		//The fighting status flags gathered sense the agent sent his last EnemyStatusUpdate.
-		//We keep a copy of the untrimmed flag string for logging purposes.
-		private char flag;
-
-		public Vector3 TargetVector {
-			get {
-				return targetVector;
-			}
-		}
-
-		public char Flag {
-			get {
-				return flag;
-			}
-		}
-
-		public EnemyStatusUpdate(char fightStatus, Vector3 target) {
+		private bool flag;
+		private Soldier soldier;
+		private DateTime timeStamp;
+		
+		public EnemyStatusUpdate(bool fightStatus, Vector3 target, Soldier s) {
 			targetVector = new Vector3(target.x, target.y, target.z);
 			flag = fightStatus;
+			soldier = s;
+			timeStamp = DateTime.Now;
+		}
+
+		public Vector3 GetTargetVector() {
+			return targetVector;
+		}
+
+		public bool GetFightStatus() {
+			return flag;
+		}
+
+		public DateTime GetTimeStamp() {
+			return timeStamp;
+		}
+
+		public Soldier GetReportingSoldiersKey() {
+			return soldier;
 		}
 		public override string ToString() {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.AppendLine( "EnemyStatusUpdate" );
-			stringBuilder.AppendLine( "Location of enemy: " + TargetVector.ToString() );
+			stringBuilder.AppendLine( "Location of enemy: " + targetVector.ToString() );
 			stringBuilder.AppendLine( "Untrimmed flag stream: " + flag.ToString() );
 			return stringBuilder.ToString();
 		}

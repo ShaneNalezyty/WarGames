@@ -365,5 +365,13 @@ namespace ParagonAI {
         public CoverData() {
             foundCover = false;
         }
-    }
+
+		public override bool Equals( object obj ) {
+			CoverData cd = (CoverData)obj;
+			if (cd.hidingPosition.Equals( hidingPosition )) {
+				return true;
+			}
+			return false;
+		}
+	}
 }

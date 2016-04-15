@@ -15,25 +15,12 @@ namespace WarGames.Communication {
 			enemyStatusUpdates = enemyUpdates;
 			agentStatusUpdate = agentUpdate;
 			timeStamp = DateTime.Now;
-
 		}
-		public EnemyStatusUpdate[] getEnemyUpdates() {
+		public EnemyStatusUpdate[] GetEnemyUpdates() {
 			return enemyStatusUpdates;
 		}
-		public Goal getGoal() {
-			return agentStatusUpdate.Goal;
-		}
-		public Plan getPlan() {
-			return agentStatusUpdate.Plan;
-		}
-		public float getPlanProgress() {
-			return agentStatusUpdate.PlanProgress;
-		}
-		public float getAgentHealth() {
-			return agentStatusUpdate.Health;
-		}
-		public DateTime getTimeStamp() {
-			return timeStamp;
+		public AgentStatusUpdate GetAgentUpdates() {
+			return agentStatusUpdate;
 		}
 		public override string ToString() {
 			StringBuilder stringBuilder = new StringBuilder();

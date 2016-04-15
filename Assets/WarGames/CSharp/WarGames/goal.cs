@@ -21,7 +21,7 @@ namespace WarGames {
         public enum AggressionLevel {
             VeryLow = 0, Low = 1, Moderate = 2, High = 3, VeryHigh = 4
         }
-        public float[] getWaitRange() {
+        public float[] GetWaitRange() {
             float[] toReturn = new float[2];
             switch (aggressionLevel) {
             case AggressionLevel.VeryLow:
@@ -57,7 +57,13 @@ namespace WarGames {
             return base.ToString();
         }
         public override bool Equals( object obj ) {
-            return GetHashCode() == obj.GetHashCode();
+			Goal checkWith = (Goal)obj;
+			if (aggressionLevel == checkWith.GetAggressionLevel()) {
+				if (destination == checkWith.GetDestination()) {
+					return true;
+				}
+			}
+            return false;
         }
         public override int GetHashCode() {
             StringBuilder stringBuilder = new StringBuilder();

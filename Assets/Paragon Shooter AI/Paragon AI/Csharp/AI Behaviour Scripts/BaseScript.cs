@@ -104,6 +104,7 @@ namespace ParagonAI {
 
         public bool canSprint = false;
         public float distFromTargetToSprint = 25f;
+		
 
         public enum AIType {
             Berserker = 0, Tactical = 1, Custom = 2, Skirmish = 3, CombatPlanning = 4,
@@ -214,8 +215,8 @@ namespace ParagonAI {
                     SetProperSpeed();
                     headLookScript.Activate();
                 }
-                yield return new WaitForSeconds(cycleTime);
-            }
+				yield return new WaitForSeconds(cycleTime);
+			}
         }
 
         public CustomAIBehaviour currentBehaviour;
