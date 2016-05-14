@@ -60,16 +60,16 @@ namespace WarGames.Behaviour {
 			} else {
 				enteringCover = false;
 				//if (!warGamesFindCoverScript.IsCoverCoroutineRunning() ) {
-				soldier.WriteToLog( "Starting Looking for Cover", "A" );
+				//soldier.WriteToLog( "Starting Looking for Cover", "A" );
 				currentCover = warGamesFindCoverScript.FindCover( currentGoal.GetDestination(), currentGoal, false, holdingPosition, warGamesFindCoverScript.DirectionTowards( startPosition, currentGoal.GetDestination() ), warGamesFindCoverScript.GetPercentToGoalDist( startPosition, currentGoal.GetDestination() ) );
-				soldier.WriteToLog( "Found cover? : " + currentCover.foundCover + "Location: " + currentCover.hidingPosition.ToString(), "A" );
+				//soldier.WriteToLog( "Found cover? : " + currentCover.foundCover + "Location: " + currentCover.hidingPosition.ToString(), "A" );
 				if (!currentCover.foundCover) {
 					targetVector = currentGoal.GetDestination();
 				}
-				soldier.WriteToLog( "distance between soldier and cover: " + Vector3.SqrMagnitude( currentCover.hidingPosition - transform.position ), "A" );
+				//soldier.WriteToLog( "distance between soldier and cover: " + Vector3.SqrMagnitude( currentCover.hidingPosition - transform.position ), "A" );
 				//}
 			}
-			soldier.WriteToLog( "End of AICycle", "A" );
+			//soldier.WriteToLog( "End of AICycle", "A" );
 			aICycleFinished = true;
 		}
 

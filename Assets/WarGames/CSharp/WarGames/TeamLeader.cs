@@ -33,7 +33,7 @@ namespace WarGames {
 				}
 			}
 		}
-		public Messageable GetMessage() {
+		private Messageable GetMessage() {
 			if (soldier.GetCommNetwork() != null) {
 				Messageable m = soldier.GetCommNetwork().GetMessage( soldier.GetLeaderLabel() );
 				//Write the Messageable to the log file.

@@ -10,7 +10,6 @@ namespace WarGames {
 		private BaseScript baseScript;
 		private bool foundCover = false;
 		private bool coroutineRunning = false;
-		private Coroutine waitCoroutine;
 		private Soldier soldier;
 		private List<CoverData> prevCover = new List<CoverData>();
 
@@ -38,8 +37,8 @@ namespace WarGames {
 			if (!baseScript.inCover && baseScript.navI.GetRemainingDistance() <= 0) {
 				baseScript.inCover = true;
 				coroutineRunning = true;
-				//waitCoroutine = StartCoroutine( SetTimeToLeaveCover(UnityEngine.Random.Range( coverWaitRange[0], coverWaitRange[1] ) ) );
-				waitCoroutine = StartCoroutine( SetTimeToLeaveCover( 3f ) );
+				StartCoroutine( SetTimeToLeaveCover(UnityEngine.Random.Range( coverWaitRange[0], coverWaitRange[1] ) ) );
+				//waitCoroutine = StartCoroutine( SetTimeToLeaveCover( 3f ) );
 			}
 		}
 
@@ -156,7 +155,7 @@ namespace WarGames {
 
 			//To make sure we don't use a location right next to our current location
 			int minDistanceBetweenLastCover = 20;
-			soldier.WriteToLog( "Possible verts: " + verts.Length, "A" );
+//			soldier.WriteToLog( "Possible verts: " + verts.Length, "A" );
 			for (int i = 0; i < verts.Length; i++) {
 				//If the possible location is farther then the set minimum space to travel before the agents last cover location
 				if (Vector3.SqrMagnitude( verts[i] - agentPosition ) > minDistanceBetweenLastCover) {
@@ -215,11 +214,11 @@ namespace WarGames {
 				CoverData toReturn = new CoverData();
 			//Once all possible locations have been found pick the best
 			if (possibleCoverNodes.Count == 0) {
-				soldier.WriteToLog( "No Cover Found!", "A" );
+//				soldier.WriteToLog( "No Cover Found!", "A" );
 				//If we didn't find any good cover return a CoverNode indicating that
 				return toReturn;
 			} else if (possibleCoverNodes.Count == 1) {
-				soldier.WriteToLog( "Only one cover found!", "A" );
+//				soldier.WriteToLog( "Only one cover found!", "A" );
 				//If we only have one location use that
 				toReturn = possibleCoverNodes[0];
 			} else {
